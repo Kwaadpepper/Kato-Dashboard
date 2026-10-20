@@ -14,6 +14,7 @@
 | `Esc` | Close / Exit | Close active modal or exit TV / fullscreen mode |
 | `F` | Fullscreen | Toggle immersive fullscreen display |
 | `M` | Sound Alerts | Mute or unmute audio alert tones |
+| `N` | Notifications | Enable or disable desktop notifications |
 | `T` | Theme Cycle | Quickly cycle through Dark, Light, and AMOLED themes |
 | `P` | Pause Marquee | Pause or resume the bottom incident ticker |
 | `Tab` / `Shift + Tab` | Focus Navigation | Cycle focus through accessible regions and controls |
@@ -52,3 +53,4 @@ Access settings via the gear icon in the top header:
 3. **Visual Themes**: Dark (default), Light (bright rooms), AMOLED (pure black), or Auto (matches OS preference).
 4. **Marquee Speed**: Fast, Normal, and Slow presets or precise custom duration sliders (15s to 120s).
 5. **Clock & Timezone**: Toggle 24h or 12h formats, show/hide seconds, and select your preferred reference timezone.
+6. **Desktop Notifications**: Browser desktop pop-up alerts on probe state changes (UP, DOWN, DEGRADED).

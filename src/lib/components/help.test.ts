@@ -23,6 +23,7 @@ describe('Help Markdown Documentation', () => {
 		assert.match(frContent, /`↑` `↓` `←` `→`/);
 		assert.match(frContent, /`F`/);
 		assert.match(frContent, /`M`/);
+		assert.match(frContent, /`N`/);
 		assert.match(frContent, /`T`/);
 		assert.match(frContent, /`\?`/);
 
@@ -31,6 +32,7 @@ describe('Help Markdown Documentation', () => {
 		assert.match(enContent, /`↑` `↓` `←` `→`/);
 		assert.match(enContent, /`F`/);
 		assert.match(enContent, /`M`/);
+		assert.match(enContent, /`N`/);
 		assert.match(enContent, /`T`/);
 		assert.match(enContent, /`\?`/);
 	});

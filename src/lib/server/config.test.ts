@@ -16,6 +16,7 @@ describe('BFF config module', () => {
 			KATO_DEFAULT_TIME_ZONE: 'Europe/Paris',
 			KATO_DEFAULT_SHOW_SECONDS: 'false',
 			KATO_DEFAULT_SOUND_ENABLED: 'true',
+			KATO_DEFAULT_NOTIFICATIONS_ENABLED: 'true',
 			KATO_DEFAULT_MARQUEE_SPEED: 'fast',
 			KATO_DEFAULT_SORT_MODE: 'alpha'
 		};
@@ -28,6 +29,7 @@ describe('BFF config module', () => {
 		assert.equal(settings.timeZone, 'Europe/Paris');
 		assert.equal(settings.showSeconds, false);
 		assert.equal(settings.soundEnabled, true);
+		assert.equal(settings.notificationsEnabled, true);
 		assert.equal(settings.marqueeSpeed, 'fast');
 		assert.equal(settings.sortMode, 'alpha');
 	});
@@ -39,6 +41,7 @@ describe('BFF config module', () => {
 			KATO_DEFAULT_TIME_FORMAT: '48h',
 			KATO_DEFAULT_SHOW_SECONDS: 'maybe',
 			KATO_DEFAULT_SOUND_ENABLED: 'unknown',
+			KATO_DEFAULT_NOTIFICATIONS_ENABLED: 'unknown',
 			KATO_DEFAULT_MARQUEE_SPEED: 'hyperspeed',
 			KATO_DEFAULT_SORT_MODE: 'random'
 		};
@@ -50,6 +53,7 @@ describe('BFF config module', () => {
 		assert.equal(settings.timeFormat, '24h');
 		assert.equal(settings.showSeconds, true);
 		assert.equal(settings.soundEnabled, false);
+		assert.equal(settings.notificationsEnabled, false);
 		assert.equal(settings.marqueeSpeed, 'slow');
 		assert.equal(settings.sortMode, 'smart');
 	});

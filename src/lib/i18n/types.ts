@@ -61,6 +61,12 @@ export interface TranslationSchema {
 		soundEnableTitle: string;
 		soundDisableAria: string;
 		soundEnableAria: string;
+		notificationsDisableTitle: string;
+		notificationsEnableTitle: string;
+		notificationsBlockedTitle: string;
+		notificationsUnsupportedTitle: string;
+		notificationsDisableAria: string;
+		notificationsEnableAria: string;
 		fullscreenExitTitle: string;
 		fullscreenEnterTitle: string;
 		fullscreenExitAria: string;
@@ -73,6 +79,15 @@ export interface TranslationSchema {
 		sectionDisplay: string;
 		fullscreenActive: string;
 		fullscreenInactive: string;
+		sectionNotifications: string;
+		notificationsActive: string;
+		notificationsInactive: string;
+		notificationsBlocked: string;
+		notificationsUnsupported: string;
+		sectionPwa: string;
+		installPwa: string;
+		pwaInstalled: string;
+		pwaStandalone: string;
 		sectionTheme: string;
 		themeDark: string;
 		themeLight: string;
@@ -192,6 +207,7 @@ export interface TranslationSchema {
 		closeOrExit: string;
 		toggleFullscreen: string;
 		toggleMute: string;
+		toggleNotifications: string;
 		cycleTheme: string;
 		toggleMarquee: string;
 		navigateRegions: string;
@@ -204,6 +220,15 @@ export interface TranslationSchema {
 		dayShort: string;
 		todayAt: string;
 		yesterdayAt: string;
+	};
+	notifications: {
+		statusChangedTitle: string;
+		statusChangedBody: string;
+		siteDownTitle: string;
+		siteUpTitle: string;
+		siteDegradedTitle: string;
+		multipleChangesTitle: string;
+		multipleChangesBody: string;
 	};
 }
 

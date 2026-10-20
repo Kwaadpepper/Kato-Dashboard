@@ -2,6 +2,8 @@
   import { initLocale, onLocaleChange, type SupportedLocale } from "$lib/i18n";
   import { initClockConfig } from "$lib/utils/clock";
   import { initMarqueeConfig } from "$lib/utils/marquee";
+  import { initNotifications } from "$lib/utils/notifications";
+  import { initPwa } from "$lib/utils/pwa";
   import { initSound } from "$lib/utils/sounds";
   import {
     applyTheme,
@@ -50,8 +52,12 @@
         showSeconds: defaults.showSeconds,
       });
       initSound(defaults.soundEnabled);
+      initNotifications(defaults.notificationsEnabled);
       initMarqueeConfig(defaults.marqueeSpeed);
     }
+
+    // 4. Initialize PWA capabilities & Service Worker
+    initPwa();
 
     return () => {
       unsubLocale();

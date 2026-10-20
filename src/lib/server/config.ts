@@ -20,6 +20,7 @@ export const FALLBACK_SETTINGS: ClientDefaultSettings = {
 	timeZone: 'local',
 	showSeconds: true,
 	soundEnabled: false,
+	notificationsEnabled: false,
 	marqueeSpeed: 'slow',
 	sortMode: 'smart'
 };
@@ -75,14 +76,20 @@ export function getDefaultClientSettings(
 	// 6. Sound alerts
 	const soundEnabled = parseBoolean(env.KATO_DEFAULT_SOUND_ENABLED, FALLBACK_SETTINGS.soundEnabled);
 
-	// 7. Marquee speed
+	// 7. Desktop notifications
+	const notificationsEnabled = parseBoolean(
+		env.KATO_DEFAULT_NOTIFICATIONS_ENABLED,
+		FALLBACK_SETTINGS.notificationsEnabled
+	);
+
+	// 8. Marquee speed
 	const rawSpeed = env.KATO_DEFAULT_MARQUEE_SPEED?.trim().toLowerCase();
 	const marqueeSpeed: MarqueeSpeed =
 		rawSpeed && VALID_MARQUEE_SPEEDS.has(rawSpeed)
 			? (rawSpeed as MarqueeSpeed)
 			: FALLBACK_SETTINGS.marqueeSpeed;
 
-	// 8. Sort mode
+	// 9. Sort mode
 	const rawSort = env.KATO_DEFAULT_SORT_MODE?.trim().toLowerCase();
 	const sortMode: SortMode =
 		rawSort && VALID_SORT_MODES.has(rawSort)
@@ -96,6 +103,7 @@ export function getDefaultClientSettings(
 		timeZone,
 		showSeconds,
 		soundEnabled,
+		notificationsEnabled,
 		marqueeSpeed,
 		sortMode
 	};

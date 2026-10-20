@@ -14,6 +14,7 @@
 | `Échap` | Fermer / Quitter | Fermer la modale active ou quitter le mode plein écran / TV |
 | `F` | Plein écran | Basculer en mode plein écran immersif |
 | `M` | Alertes sonores | Activer ou couper les tonalités audio d'alerte |
+| `N` | Notifications | Activer ou désactiver les notifications de bureau |
 | `T` | Cycle des thèmes | Alterner rapidement entre les thèmes Sombre, Clair et AMOLED |
 | `P` | Pause bandeau | Mettre en pause ou relancer le bandeau des incidents |
 | `Tab` / `Maj + Tab` | Navigation clavier | Parcourir les éléments interactifs du tableau de bord |
@@ -52,3 +53,4 @@ Depuis le menu des paramètres (icône engrenage dans la barre supérieure) :
 3. **Thèmes visuels** : Sombre (standard), Clair (bureaux lumineux), AMOLED (contraste maximal, noir absolu) ou Automatique selon votre système.
 4. **Vitesse du bandeau** : Préréglages Rapide, Normal, Lent ou ajustement fin de la durée (15s à 120s).
 5. **Horloge & Fuseau horaire** : Format 24h ou 12h, affichage des secondes et sélection de votre fuseau horaire de référence.
+6. **Notifications de bureau** : Alertes pop-up de bureau lors des changements d'état des sondes (UP, DOWN, DEGRADED).

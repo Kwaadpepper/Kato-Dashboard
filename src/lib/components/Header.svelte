@@ -10,10 +10,24 @@
   } from "$lib/i18n";
   import type { NormalizedProbe } from "$lib/types";
   import { onFullscreenChange, toggleFullscreen } from "$lib/utils/fullscreen";
+  import {
+    onNotificationChange,
+    toggleNotification,
+    type NotificationPermissionState,
+  } from "$lib/utils/notifications";
+  import {
+    isStandalone,
+    onPwaChange,
+    promptPwaInstall,
+  } from "$lib/utils/pwa";
   import { onSoundChange, toggleSound } from "$lib/utils/sounds";
   import { applyTheme, onThemeChange, type Theme } from "$lib/utils/theme";
+  import AppWindow from "lucide-svelte/icons/app-window";
+  import Bell from "lucide-svelte/icons/bell";
+  import BellOff from "lucide-svelte/icons/bell-off";
   import Check from "lucide-svelte/icons/check";
   import CircleHelp from "lucide-svelte/icons/circle-help";
+  import Download from "lucide-svelte/icons/download";
   import Grid2x2 from "lucide-svelte/icons/grid-2x2";
   import Maximize from "lucide-svelte/icons/maximize";
   import Minimize from "lucide-svelte/icons/minimize";
@@ -93,9 +107,14 @@
   ) => translate(key, params, activeLocale);
   let activeTheme = $state<Theme>("dark");
   let isSoundOn = $state(false);
+  let isNotificationOn = $state(false);
+  let notificationPermission = $state<NotificationPermissionState>("unsupported");
   let isFullscreenActive = $state(false);
   let currentMarqueeSpeed = $state<MarqueeSpeed>("slow");
   let currentMarqueeDuration = $state(60);
+  let isInstalled = $state(false);
+  let canInstall = $state(false);
+  let isStandaloneMode = $state(false);
 
   function updateCurrentTime() {
     const d = new Date();
@@ -111,7 +130,7 @@
     now = Date.now();
   }
 
-  // Subscriptions for theme, locale, sound, marquee, clock, and fullscreen
+  // Subscriptions for theme, locale, sound, notifications, marquee, clock, fullscreen, and PWA
   onMount(() => {
     const unsubscribe = onThemeChange((theme) => {
       activeTheme = theme;
@@ -122,6 +141,10 @@
     });
     const unsubSound = onSoundChange((enabled) => {
       isSoundOn = enabled;
+    });
+    const unsubNotifications = onNotificationChange((enabled, perm) => {
+      isNotificationOn = enabled;
+      notificationPermission = perm;
     });
     const unsubFullscreen = onFullscreenChange((fs) => {
       isFullscreenActive = fs;
@@ -134,6 +157,11 @@
       clockConfig = cfg;
       updateCurrentTime();
     });
+    const unsubPwa = onPwaChange((installed, installable) => {
+      isInstalled = installed;
+      canInstall = installable;
+      isStandaloneMode = isStandalone();
+    });
 
     // Clock and freshness updated every second (isolated outside $effect scheduler)
     updateCurrentTime();
@@ -143,16 +171,44 @@
       unsubscribe();
       unsubLocale();
       unsubSound();
+      unsubNotifications();
       unsubFullscreen();
       unsubMarquee();
       unsubClock();
+      unsubPwa();
       clearInterval(interval);
     };
   });
 
+  async function handleInstallPwa() {
+    await promptPwaInstall();
+  }
+
   function handleToggleSound() {
     isSoundOn = toggleSound();
   }
+
+  async function handleToggleNotifications() {
+    await toggleNotification();
+  }
+
+  const notificationTitle = $derived.by(() => {
+    if (notificationPermission === "unsupported") {
+      return t("header.notificationsUnsupportedTitle");
+    }
+    if (notificationPermission === "denied") {
+      return t("header.notificationsBlockedTitle");
+    }
+    return isNotificationOn
+      ? t("header.notificationsDisableTitle")
+      : t("header.notificationsEnableTitle");
+  });
+
+  const notificationAria = $derived.by(() => {
+    return isNotificationOn
+      ? t("header.notificationsDisableAria")
+      : t("header.notificationsEnableAria");
+  });
 
   const themeOptions = $derived<
     Array<{ id: Theme; label: string; icon: string }>
@@ -434,6 +490,25 @@
       {/if}
     </button>
 
+    <!-- Desktop notifications toggle (🔔/🔕) -->
+    <button
+      type="button"
+      onclick={() => void handleToggleNotifications()}
+      class="p-1 rounded-md transition-colors cursor-pointer {isNotificationOn
+        ? 'text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/40'
+        : notificationPermission === 'denied'
+          ? 'text-red-400/60 hover:text-red-400 hover:bg-red-950/30'
+          : 'text-[var(--kato-text-secondary)] hover:text-[var(--kato-text-primary)] hover:bg-slate-800/30'}"
+      title={notificationTitle}
+      aria-label={notificationAria}
+    >
+      {#if isNotificationOn}
+        <Bell class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      {:else}
+        <BellOff class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      {/if}
+    </button>
+
     <!-- Fullscreen toggle -->
     <button
       type="button"
@@ -454,6 +529,19 @@
         <Maximize class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
       {/if}
     </button>
+
+    <!-- PWA Install button (visible when browser supports deferred prompt) -->
+    {#if canInstall}
+      <button
+        type="button"
+        onclick={() => void handleInstallPwa()}
+        class="p-1 rounded-md text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/40 transition-colors cursor-pointer"
+        title={t("settings.installPwa")}
+        aria-label={t("settings.installPwa")}
+      >
+        <Download class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      </button>
+    {/if}
 
     <!-- Help & shortcuts button (?) -->
     <button
@@ -551,6 +639,87 @@
               <Check class="w-3.5 h-3.5 text-emerald-400" />
             {/if}
           </button>
+
+          <!-- Desktop notifications section -->
+          <div
+            class="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--kato-text-secondary)] border-t border-b border-[var(--kato-border)] flex items-center justify-between"
+          >
+            <span>{t("settings.sectionNotifications")}</span>
+          </div>
+          <button
+            type="button"
+            onclick={() => void handleToggleNotifications()}
+            class="w-full flex items-center justify-between px-3 py-1.5 text-left hover:bg-slate-800/30 transition-colors cursor-pointer {isNotificationOn
+              ? 'text-emerald-400 font-medium'
+              : 'text-[var(--kato-text-primary)]'}"
+            aria-label={notificationAria}
+          >
+            <div class="flex items-center gap-2">
+              {#if isNotificationOn}
+                <Bell class="w-3.5 h-3.5 text-emerald-400" />
+                <span>{t("settings.notificationsActive")}</span>
+              {:else if notificationPermission === 'denied'}
+                <BellOff class="w-3.5 h-3.5 text-red-400" />
+                <span class="text-red-400">{t("settings.notificationsBlocked")}</span>
+              {:else if notificationPermission === 'unsupported'}
+                <BellOff class="w-3.5 h-3.5 text-slate-500" />
+                <span class="text-slate-500">{t("settings.notificationsUnsupported")}</span>
+              {:else}
+                <BellOff class="w-3.5 h-3.5" />
+                <span>{t("settings.notificationsInactive")}</span>
+              {/if}
+            </div>
+            {#if isNotificationOn}
+              <Check class="w-3.5 h-3.5 text-emerald-400" />
+            {/if}
+          </button>
+
+          <!-- Application (PWA) section -->
+          <div
+            class="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--kato-text-secondary)] border-t border-b border-[var(--kato-border)] flex items-center justify-between"
+          >
+            <span>{t("settings.sectionPwa")}</span>
+          </div>
+          {#if isStandaloneMode}
+            <div
+              class="w-full flex items-center justify-between px-3 py-1.5 text-emerald-400 font-medium"
+            >
+              <div class="flex items-center gap-2">
+                <AppWindow class="w-3.5 h-3.5 text-emerald-400" />
+                <span>{t("settings.pwaStandalone")}</span>
+              </div>
+              <Check class="w-3.5 h-3.5 text-emerald-400" />
+            </div>
+          {:else if canInstall}
+            <button
+              type="button"
+              onclick={() => void handleInstallPwa()}
+              class="w-full flex items-center justify-between px-3 py-1.5 text-left hover:bg-slate-800/30 transition-colors cursor-pointer text-emerald-400 font-medium"
+            >
+              <div class="flex items-center gap-2">
+                <Download class="w-3.5 h-3.5 text-emerald-400" />
+                <span>{t("settings.installPwa")}</span>
+              </div>
+            </button>
+          {:else if isInstalled}
+            <div
+              class="w-full flex items-center justify-between px-3 py-1.5 text-emerald-400 font-medium"
+            >
+              <div class="flex items-center gap-2">
+                <Check class="w-3.5 h-3.5 text-emerald-400" />
+                <span>{t("settings.pwaInstalled")}</span>
+              </div>
+            </div>
+          {:else}
+            <div
+              class="w-full flex items-center justify-between px-3 py-1.5 text-slate-400"
+            >
+              <div class="flex items-center gap-2">
+                <AppWindow class="w-3.5 h-3.5 text-slate-500" />
+                <span>{t("settings.installPwa")}</span>
+              </div>
+            </div>
+          {/if}
 
           <div
             class="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--kato-text-secondary)] border-t border-b border-[var(--kato-border)]"

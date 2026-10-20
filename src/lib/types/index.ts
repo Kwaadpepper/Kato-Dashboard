@@ -366,6 +366,8 @@ export interface ClientDefaultSettings {
   showSeconds: boolean;
   /** Whether audio alerts are enabled by default */
   soundEnabled: boolean;
+  /** Whether browser desktop notifications are enabled by default */
+  notificationsEnabled: boolean;
   /** Incident marquee scrolling speed */
   marqueeSpeed: MarqueeSpeed;
   /** Default probe sort mode */
@@ -384,6 +386,8 @@ export interface UserPreferences {
   sortMode: SortMode;
   /** Audio alerts toggle */
   soundEnabled: boolean;
+  /** Desktop notifications toggle */
+  notificationsEnabled?: boolean;
   /** Auto-fullscreen in TV mode (?tv=1) */
   tvAutoFullscreen: boolean;
   /** Clock format (24h or 12h) */

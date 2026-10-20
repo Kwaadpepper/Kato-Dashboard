@@ -23,6 +23,11 @@
   } from "$lib/types";
   import { toggleFullscreen } from "$lib/utils/fullscreen";
   import { calculateGrid } from "$lib/utils/grid-calculator";
+  import {
+    emitMultipleStatusChangesNotification,
+    emitProbeStatusNotification,
+    toggleNotification,
+  } from "$lib/utils/notifications";
   import { sortProbesSmart } from "$lib/utils/sort";
   import {
     playAlertCritical,
@@ -239,10 +244,17 @@
           let downToUpCount = 0;
           const updatedPrev = { ...previousStatuses };
           const newFlashing = new Set<string>();
+          const statusChangedProbes: Array<{
+            probe: NormalizedProbe;
+            oldStatus: ProbeStatus;
+          }> = [];
 
           const probeMap = new Map(probes.map((p) => [p.id, p]));
           for (const updated of delta.changed) {
             const oldStatus = previousStatuses[updated.id];
+            if (oldStatus && oldStatus !== updated.status) {
+              statusChangedProbes.push({ probe: updated, oldStatus });
+            }
             if (oldStatus === "up" && updated.status === "down") {
               upToDownCount++;
               newFlashing.add(updated.id);
@@ -284,6 +296,26 @@
             playAlertDown();
           } else if (downToUpCount > 0) {
             playAlertRecovery();
+          }
+
+          // Desktop notifications based on state changes:
+          if (statusChangedProbes.length > 0) {
+            if (statusChangedProbes.length <= 3) {
+              for (const { probe, oldStatus } of statusChangedProbes) {
+                emitProbeStatusNotification(probe, oldStatus, probe.status, {
+                  locale: currentLocale,
+                  onClick: () => {
+                    if (!isTvMode) {
+                      selectedProbe = probe;
+                    }
+                  },
+                });
+              }
+            } else {
+              emitMultipleStatusChangesNotification(statusChangedProbes.length, {
+                locale: currentLocale,
+              });
+            }
           }
         }
 
@@ -451,6 +483,9 @@
     } else if (event.key === "m" || event.key === "M") {
       event.preventDefault();
       toggleSound();
+    } else if (event.key === "n" || event.key === "N") {
+      event.preventDefault();
+      void toggleNotification();
     } else if (event.key === "t" || event.key === "T") {
       event.preventDefault();
       const themes: Theme[] = ["dark", "light", "amoled"];
