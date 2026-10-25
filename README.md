@@ -1,329 +1,203 @@
+<div align="center">
+
 # Kato — High-Density Monitoring Wallboard
 
-> **Kato** is a real-time, high-density monitoring dashboard engineered to visualize anywhere from 1 to 200+ probes on a single screen with **zero scrolling** on desktop and TV wallboards. It aggregates third-party monitoring services (such as UptimeRobot and UptimeKuma) through a lightweight SvelteKit BFF (Backend-For-Frontend) and pushes differential updates to client browsers using native Server-Sent Events (SSE).
+**Visualize 1 to 200+ monitoring probes on a single screen with guaranteed zero scrolling.**  
+Aggregate multiple **Uptime Kuma** and **UptimeRobot** instances in real time via Server-Sent Events (SSE).
+
+[![CI](https://github.com/Kwaadpepper/kato-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/Kwaadpepper/kato-dashboard/actions/workflows/ci.yml)
+[![Docker](https://github.com/Kwaadpepper/kato-dashboard/actions/workflows/docker.yml/badge.svg)](https://github.com/Kwaadpepper/kato-dashboard/pkgs/container/kato-dashboard)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages%20(EN%20%2F%20FR)-10b981)](https://kwaadpepper.github.io/kato-dashboard/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+[**📘 Documentation (English)**](https://kwaadpepper.github.io/kato-dashboard/) · [**🇫🇷 Documentation (Français)**](https://kwaadpepper.github.io/kato-dashboard/fr/) · [**🚀 Quick Start (30s)**](#-quick-start-30-seconds) · [**🐳 Docker Image**](https://github.com/Kwaadpepper/kato-dashboard/pkgs/container/kato-dashboard)
+
+</div>
 
 ---
 
-## 📸 Preview
+## 📸 Screenshots
 
-```text
-+-----------------------------------------------------------------------------------+
-| KATO   198/200 UP   [🟢 198] [🟡 1] [🔴 1] [⚪ 0]                   13:45:12   ↻ 4s 🔊 🌙 |
-+-----------------------------------------------------------------------------------+
-| +--------------+ +--------------+ +--------------+ +--------------+ +------------+ |
-| | API Gateway  | | Auth Service | | DB Primary   | | CDN Edge     | | Worker #1  | |
-| | 99.98%  24ms | | 100%    18ms | | DOWN   0ms   | | 99.99%  12ms | | 100%  32ms | |
-| +--------------+ +--------------+ +--------------+ +--------------+ +------------+ |
-| +--------------+ +--------------+ +--------------+ +--------------+ +------------+ |
-| | Worker #2    | | Redis Cache  | | Search Index | | Mailer Queue | | S3 Storage | |
-| | 100%    28ms | | 99.95%   8ms | | DEGRADED 180m| | 100%    45ms | | 100%  95ms | |
-| +--------------+ +--------------+ +--------------+ +--------------+ +------------+ |
-+-----------------------------------------------------------------------------------+
-| 🔴 Incidents (2) : DB Primary DOWN (3m 12s)  •  Search Index DEGRADED (12m 45s)   |
-+-----------------------------------------------------------------------------------+
+![Kato Dashboard — Hero Wallboard View](docs/public/screenshots/kato-hero-dark.png)
+
+| 24-Hour SLA & Outage Inspector | High-Density Zero-Scroll Matrix (110+ Probes) |
+| :---: | :---: |
+| ![Kato 24h Detail Modal](docs/public/screenshots/kato-detail-modal.png) | ![Kato High Density Grid](docs/public/screenshots/kato-high-density.png) |
+
+---
+
+## ✨ Why Kato?
+
+- **📐 Guaranteed Zero-Scroll Grid**: Proprietary geometric layout engine computes optimal rows, columns, cell sizes, and **5 progressive density tiers** (`large`, `medium`, `compact`, `micro`, `pixel`) to fit 100% of your viewport without vertical or horizontal scrollbars.
+- **🔌 Multi-Source Aggregation & Color Badges**: Connect multiple **Uptime Kuma** servers (e.g., Production + LAN) and **UptimeRobot** accounts simultaneously on a single unified wallboard. Each probe displays a deterministic color-coded source badge (`KP`, `KL`, `UR`).
+- **⚡ Auto-Detection & Zero Database**: 100% in-memory SvelteKit Node.js BFF (Backend-For-Frontend). Pass `UPTIME_KUMA_URL` or `UPTIMEROBOT_API_KEY` and Kato automatically enables the right adapter—no database required, API keys never leave the server.
+- **🎯 Smart Outage Prioritization**: Monitors experiencing outages (`DOWN`) automatically jump to the top-left of the screen, followed by `DEGRADED` monitors, healthy monitors sorted by criticality, and alphabetical order.
+- **📺 24/7 TV & NOC Wallboard Mode (`?tv=1`)**: Automatic fullscreen, cursor auto-hide after 5s of inactivity, periodic OLED/AMOLED anti burn-in drift (±3px), Screen Wake Lock, and a continuous incident marquee ticker.
+- **🔔 Desktop Notifications, Web Audio & PWA**:
+  - Install as a standalone **Progressive Web App (PWA)** on desktop or mobile (with *Start app when you sign in* OS auto-launch support).
+  - Native **Desktop Notifications** (`N`) with anti-flood grouping for mass incidents.
+  - Pure Web Audio synthesizer chimes (`M`) for outage alerts and recovery notifications.
+- **🕵️ Privacy / Screenshot Mode (`?anonymize=1`)**: One-click toggle in the Settings menu replaces sensitive probe names, URLs, and groups with realistic infrastructure placeholders while preserving your real statuses, latencies, and SLA percentages.
+- **🌍 Bilingual & Accessible (WCAG AA)**: Full **English** and **French** localization, 4 high-contrast themes (**Dark**, **Light**, **AMOLED Pure Black**, **Auto**), and full 2D keyboard navigation.
+
+---
+
+## 🚀 Quick Start (30 Seconds)
+
+### 1. One-Liner `docker run`
+
+Try the interactive multi-source demo immediately, or connect directly to your Uptime Kuma / UptimeRobot instance:
+
+```bash
+# Instant Demo Mode (50 realistic multi-source probes)
+docker run -d --name kato -p 3000:3000 ghcr.io/kwaadpepper/kato-dashboard:latest
+
+# Connect directly to Uptime Kuma (Adapter auto-detected!)
+docker run -d --name kato -p 3000:3000 \
+  -e UPTIME_KUMA_URL=https://kuma.your-domain.com \
+  -e UPTIME_KUMA_API_KEY=uk1_your_api_key \
+  ghcr.io/kwaadpepper/kato-dashboard:latest
+
+# Connect directly to UptimeRobot (Adapter auto-detected!)
+docker run -d --name kato -p 3000:3000 \
+  -e UPTIMEROBOT_API_KEY=u123456-your_readonly_token \
+  ghcr.io/kwaadpepper/kato-dashboard:latest
+```
+
+Open **`http://localhost:3000`** in your browser (or **`http://localhost:3000/?tv=1`** for TV wallboard mode).
+
+---
+
+### 2. Standalone `docker-compose.yml` (No Clone Needed)
+
+Create a `docker-compose.yml` file anywhere on your server:
+
+```yaml
+services:
+  kato:
+    image: ghcr.io/kwaadpepper/kato-dashboard:latest
+    container_name: kato-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      # Provide Uptime Kuma and/or UptimeRobot credentials (auto-detected):
+      UPTIME_KUMA_URL: "https://kuma.your-domain.com"
+      UPTIME_KUMA_API_KEY: "uk1_your_api_key"
+      # Optional UI defaults:
+      KATO_DEFAULT_LOCALE: "en" # 'en' or 'fr'
+      KATO_DEFAULT_THEME: "dark" # 'dark', 'light', 'amoled', 'auto'
+    restart: unless-stopped
+```
+
+```bash
+docker compose up -d
 ```
 
 ---
 
-## ✨ Key Features
+### 3. Multi-Instance Configuration (`KATO_ADAPTERS`)
 
-- **Guaranteed Zero-Scroll (Desktop & TV)**: Proprietary adaptive grid algorithm dynamically computes cell geometries, rows, columns, gaps, and density tiers to fit 100% of the viewport without vertical or horizontal scrollbars.
-- **5 Progressive Density Modes**:
-  - `large` (1–12 probes): Detailed cards featuring name, target URL, 24h uptime, and latency sparklines.
-  - `medium` (13–48 probes): Compact cards balancing information density and readability.
-  - `compact` (49–120 probes): Condensed rows with status badges and response times.
-  - `micro` (121–300 probes): High-density status dots with instant contextual tooltips.
-  - `pixel` (> 300 probes): Ultra-dense heatmap matrix.
-- **Server-Sent Events (SSE) Real-Time Stream**: Unidirectional HTTP event stream (`init` full snapshot, `update` fine-grained deltas, `heartbeat` every 15s) with automatic reconnection and state reconciliation.
-- **Intelligent Prioritization**: Probes experiencing outages (`DOWN`) are automatically promoted to the top-left, followed by `DEGRADED` monitors, healthy monitors sorted by criticality, and alphabetical sorting.
-- **24/7 TV & Wallboard Mode (`?tv=1`)**: Automatic fullscreen (`requestFullscreen`), cursor auto-hiding after 5 seconds of inactivity, periodic anti burn-in drift (±3px every 10 min), Screen Wake Lock integration, and continuous incident marquee ticker.
-- **Accessibility & Design Themes (WCAG AA)**: Fully accessible with high-contrast themes (**Dark**, **Light**, **AMOLED / Pure Black**, **Auto**). Full keyboard navigation (2D grid arrow keys, `Home`, `End`, `PageUp`, `PageDown`), screen reader live regions (`aria-live`), and skip links.
-- **Multilingual Support**: Fully internationalized in **English** (default) and **French** with runtime switching and persistence.
-- **Zero Database / Zero Bloat**: 100% in-memory architecture. Restarting the server performs a fast clean re-sync with third-party providers.
+Aggregate multiple Uptime Kuma servers and UptimeRobot accounts with distinct source badges (`KP`, `KL`, `RM`):
 
----
+```dotenv
+KATO_ADAPTERS=kuma_prod,kuma_lan,robot_main
 
-## 🛠️ Tech Stack
+# Instance 1: Production Uptime Kuma (Badge: KP)
+ADAPTER_KUMA_PROD_URL=https://kuma.prod.acme.io
+ADAPTER_KUMA_PROD_API_KEY=uk1_prod_token
+ADAPTER_KUMA_PROD_POLL_INTERVAL=30000
 
-- **Framework**: [SvelteKit 2](https://kit.svelte.dev/) with **Svelte 5** (modern Runes: `$state`, `$derived`, `$effect`)
-- **Server Adapter**: `@sveltejs/adapter-node` (standalone persistent Node.js service)
-- **Styling**: Tailwind CSS v4 + PostCSS
-- **Language**: TypeScript (strict mode enabled across client and server)
-- **Real-Time Delivery**: Native Server-Sent Events (`EventSource`)
-- **Icons**: Lucide Icons (`lucide-svelte`)
-- **Persistence**: In-memory singleton store with rolling 24-hour incident buffer
+# Instance 2: Internal LAN Uptime Kuma (Badge: KL)
+ADAPTER_KUMA_LAN_URL=http://192.168.1.50:3001
+ADAPTER_KUMA_LAN_API_KEY=uk1_lan_token
+ADAPTER_KUMA_LAN_POLL_INTERVAL=15000
+
+# Instance 3: UptimeRobot Cloud (Badge: RM)
+ADAPTER_ROBOT_MAIN_API_KEY=u987654-secret
+ADAPTER_ROBOT_MAIN_POLL_INTERVAL=60000
+```
 
 ---
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 20.x or higher
-- npm 10.x or higher
-
-### Installation
+### 4. Run or Build from Source
 
 ```bash
 # Clone the repository
 git clone https://github.com/Kwaadpepper/kato-dashboard.git
 cd kato-dashboard
 
-# Install dependencies
-npm install
-
-# Create environment configuration
+# Copy configuration templates
 cp .env.example .env
-```
+cp docker-compose.example.yml docker-compose.yml
 
-### 🐳 Docker (recommended)
-
-The easiest way to run Kato — no Node.js required:
-
-```bash
-# Copy and edit configuration
-cp .env.example .env
-
-# Pull the pre-built image and start
+# Option A: Run with Docker Compose
 docker compose up -d
-```
 
-The app will be available at `http://localhost:3000`.
-
-> To build the image locally instead of pulling from the registry, replace `image:` with `build: .` in `docker-compose.yml`.
-
-Published image: `ghcr.io/kwaadpepper/kato-dashboard:latest`
-
-### Development Server
-
-```bash
+# Option B: Run locally with Node.js (20.x / 22.x+)
+npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+---
 
-### Production Build & Run
+## ⚙️ Environment Variables Summary
+
+| Variable | Default | Description |
+| :--- | :---: | :--- |
+| `KATO_ADAPTER` | `mock` | Simple mode provider (`mock`, `uptimerobot`, `uptimekuma`, or comma-separated). Auto-detected when `UPTIME_KUMA_URL` or `UPTIMEROBOT_API_KEY` is provided. |
+| `KATO_ADAPTERS` | `""` | Named multi-instance adapter aliases (e.g. `kuma_prod,kuma_lan,robot_main`). |
+| `KATO_MOCK_COUNT` | `50` | Number of simulated probes in `mock` demo mode. |
+| `UPTIME_KUMA_URL` | `""` | Base URL of your Uptime Kuma instance (e.g. `https://kuma.example.com`). |
+| `UPTIME_KUMA_API_KEY` | `""` | Uptime Kuma API key (`uk1_...`) for `/metrics` authentication. |
+| `UPTIME_KUMA_POLL_INTERVAL` | `60000` | Uptime Kuma polling interval in milliseconds. |
+| `UPTIMEROBOT_API_KEY` | `""` | UptimeRobot v3 read-only API key. |
+| `UPTIMEROBOT_POLL_INTERVAL` | `30000` | UptimeRobot polling interval in milliseconds. |
+| `KATO_AUTH_ENABLED` | `false` | Enable password authentication (`KATO_AUTH_PASSWORD`). |
+| `KATO_DEFAULT_LOCALE` | `en` | Default UI language (`en` or `fr`). |
+| `KATO_DEFAULT_THEME` | `dark` | Default theme (`dark`, `light`, `amoled`, `auto`). |
+| `KATO_DEFAULT_SOUND_ENABLED` | `false` | Enable synthesizer audio alerts by default. |
+| `KATO_DEFAULT_NOTIFICATIONS_ENABLED` | `false` | Enable desktop notifications by default. |
+| `PORT` / `HOST` | `3000` / `0.0.0.0` | HTTP listening port and network interface. |
+
+👉 See the [**Full Configuration & Architecture Documentation**](https://kwaadpepper.github.io/kato-dashboard/guide/configuration) for all advanced options.
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Key | Action |
+| :--- | :--- |
+| `Arrow Keys` / `Home` / `End` | 2D spatial navigation across the probe grid |
+| `Enter` / `Space` | Open 24-hour detail & incident history drawer |
+| `F` | Toggle fullscreen mode |
+| `M` | Toggle Web Audio sound alerts |
+| `N` | Toggle desktop notifications |
+| `T` | Cycle color themes (`Dark` → `Light` → `AMOLED`) |
+| `P` | Pause / resume bottom incident ticker |
+| `?` | Open interactive Help & Shortcuts modal |
+| `Escape` | Close modal / exit TV mode |
+
+---
+
+## 🧪 Development & Verification
 
 ```bash
-# Compile and build bundle
-npm run build
-
-# Start production Node.js server
-node build
-```
-
-The application will be accessible at `http://localhost:3000` (or your configured `PORT`).
-
----
-
-## ⚙️ Configuration (`.env`)
-
-Configure your installation using environment variables:
-
-| Variable                     |   Type    |  Default   | Description                                                       |
-| :--------------------------- | :-------: | :--------: | :---------------------------------------------------------------- |
-| `KATO_ADAPTER`               | `string`  |   `mock`   | Active monitoring provider (`mock`, `uptimerobot`, `uptimekuma`, or comma-separated list e.g. `uptimerobot,uptimekuma`). |
-| `KATO_ADAPTERS`              | `string`  |    `""`    | Named multi-instance adapter list (e.g. `kuma_prod,kuma_lan,robot_main`). Configured via `ADAPTER_<NAME>_*`. |
-| `KATO_MOCK_COUNT`            | `number`  |    `50`    | Total number of simulated probes in mock mode.                    |
-| `KATO_AUTH_ENABLED`          | `boolean` |  `false`   | Enable password protection for dashboard access.                  |
-| `KATO_AUTH_PASSWORD`         | `string`  | `changeme` | Required password if authentication is enabled.                   |
-| `KATO_DEFAULT_LOCALE`        | `string`  |    `en`    | Default UI language (`en` or `fr`).                               |
-| `KATO_DEFAULT_THEME`         | `string`  |   `dark`   | Initial color theme (`dark`, `light`, `amoled`, `auto`).          |
-| `KATO_DEFAULT_TIME_FORMAT`   | `string`  |   `24h`    | Clock display format (`24h` or `12h`).                            |
-| `KATO_DEFAULT_TIME_ZONE`     | `string`  |  `local`   | Clock timezone (`local` or IANA like `UTC`, `Europe/Paris`).      |
-| `KATO_DEFAULT_SHOW_SECONDS`  | `boolean` |   `true`   | Show or hide seconds in header clock.                             |
-| `KATO_DEFAULT_SOUND_ENABLED` | `boolean` |  `false`   | Enable sound chime alerts for state transitions.                  |
-| `KATO_DEFAULT_MARQUEE_SPEED` | `string`  |   `slow`   | Ticker speed preset (`slow`, `normal`, `fast`).                   |
-| `KATO_DEFAULT_SORT_MODE`     | `string`  |  `smart`   | Grid sort order (`smart`, `status`, `alpha`, `latency`, `group`). |
-| `UPTIMEROBOT_API_KEY`        | `string`  |    `""`    | UptimeRobot v3 API read-only token.                               |
-| `UPTIMEROBOT_POLL_INTERVAL`  | `number`  |  `30000`   | UptimeRobot polling interval in milliseconds.                     |
-| `UPTIME_KUMA_URL`            | `string`  |    `""`    | Base URL of your UptimeKuma instance (e.g. `https://kuma.example.com`). |
-| `UPTIME_KUMA_API_KEY`        | `string`  |    `""`    | UptimeKuma API key (Basic Auth password for `/metrics`). Required once an API key is created. |
-| `UPTIME_KUMA_POLL_INTERVAL`  | `number`  |  `60000`   | UptimeKuma polling interval in milliseconds.                      |
-| `PORT`                       | `number`  |   `3000`   | Production HTTP listening port.                                   |
-| `HOST`                       | `string`  | `0.0.0.0`  | Production network binding interface.                             |
-
----
-
-## 📱 Display Modes
-
-### 1. Standard Desktop Dashboard
-Navigate to `http://localhost:3000/`.
-- Dynamically adapts grid geometry on viewport resize via debounced `ResizeObserver`.
-- Click or press `Enter`/`Space` on any cell to open the side panel inspection view (latency, 24h & 7d availability, 24-hour hourly timeline, incident history).
-- Switch themes, toggle sound alerts, or configure clock and speed preferences in the settings modal.
-
-### 2. TV & NOC Wallboard (`?tv=1`)
-Append `?tv=1` to the URL: `http://localhost:3000/?tv=1`
-- **Automatic Fullscreen**: Requests native fullscreen mode on initial user interaction.
-- **Cursor Auto-Hide**: Mouse cursor fades out after 5 seconds of inactivity.
-- **Anti Burn-In Drift**: Subtle, periodic ±3px position shifts (`animate-kato-drift`) protect OLED, AMOLED, and plasma panels.
-- **Screen Wake Lock**: Prevents TVs and monitors from entering sleep or screensaver modes.
-- **Continuous Marquee**: Active incident ticker loops smoothly across the footer.
-- Exit anytime using `Escape`.
-
-### 3. Mobile & Tablet
-Open on mobile devices (`viewport < 768px`):
-- Responsive touch-friendly layout with smooth vertical scrolling (`overflow-y-auto`).
-- **44px minimum touch targets** compliant with Apple HIG and Google Material guidelines.
-- Tap a probe to open a full-screen bottom sheet with detailed metrics.
-- **Pull-to-Refresh**: Native touch pull-down gesture to trigger a manual refresh.
-
----
-
-## 🏗️ Architecture Overview
-
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                    EXTERNAL PROVIDERS                       │
-│   UptimeRobot API v3 / UptimeKuma /metrics / Other APIs     │
-└─────────────────────────────┬───────────────────────────────┘
-                              │ HTTP Polling (Node.js Server)
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    SVELTEKIT BFF SERVER                     │
-│                                                             │
-│   src/lib/server/adapters/                                  │
-│   ├── mock.adapter.ts                                       │
-│   ├── uptime-robot.adapter.ts                               │
-│   └── uptime-kuma.adapter.ts                                │
-│                                                             │
-│   src/lib/server/poller.ts (Background polling loop)        │
-│                │                                            │
-│                ▼                                            │
-│   src/lib/server/store.ts (In-Memory Singleton RAM)         │
-│   ├── Map<string, NormalizedProbe>                          │
-│   ├── Map<string, NormalizedIncident> (24h sliding window)  │
-│   └── Diffing & Delta Generator (DashboardDelta)            │
-│                │                                            │
-│                ▼                                            │
-│   src/routes/api/events/+server.ts                          │
-│   └── SSE Stream: init (snapshot), update (deltas), heartbeat│
-└─────────────────────────────┬───────────────────────────────┘
-                              │ text/event-stream (SSE)
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      BROWSER CLIENT                         │
-│                                                             │
-│   src/lib/utils/sse-client.ts (EventSource + auto-reconnect)│
-│   src/lib/utils/grid-calculator.ts (Zero-scroll geometry)   │
-│   src/routes/+page.svelte (Svelte 5 Runes Orchestration)    │
-│                                                             │
-│   src/lib/components/                                       │
-│   ├── Header.svelte (Score, ARIA badges, freshness, clock)  │
-│   ├── ProbeGrid.svelte (Dynamic CSS Grid + FLIP animations) │
-│   ├── ProbeCell.svelte / ProbeDot.svelte                    │
-│   ├── IncidentBar.svelte (aria-live, TV marquee ticker)     │
-│   └── DetailModal.svelte (Side-panel metrics & history)     │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🔌 Adding a Custom Monitoring Adapter
-
-Kato uses the **Adapter Pattern** to isolate external monitoring providers. To add a new provider (e.g. Pingdom, Better Uptime, Datadog, or internal Prometheus):
-
-### Step 1: Implement `MonitoringAdapter`
-Create `src/lib/server/adapters/my-service.adapter.ts`:
-
-```typescript
-import type {
-    MonitoringAdapter,
-    AdapterConfig,
-    NormalizedProbe,
-    NormalizedIncident
-} from '$lib/types';
-
-export class MyServiceAdapter implements MonitoringAdapter {
-    readonly name = 'myservice';
-    private apiKey = '';
-    private pollIntervalMs = 30000;
-
-    async initialize(config: AdapterConfig): Promise<void> {
-        this.apiKey = (config.apiKey as string) ?? '';
-        this.pollIntervalMs = (config.pollInterval as number) ?? 30000;
-    }
-
-    async fetchProbes(): Promise<NormalizedProbe[]> {
-        const response = await fetch('https://api.myservice.com/v1/monitors', {
-            headers: { Authorization: `Bearer ${this.apiKey}` }
-        });
-        const data = await response.json();
-
-        return data.monitors.map((item: any) => ({
-            id: String(item.id),
-            name: item.name,
-            url: item.url ?? null,
-            status: item.is_up ? 'up' : 'down',
-            responseTime: item.latency_ms ?? null,
-            uptime24h: item.uptime_24h ?? 100,
-            uptime7d: item.uptime_7d ?? 100,
-            criticality: 'critical',
-            lastCheck: new Date().toISOString(),
-            group: item.category ?? null,
-            source: this.name
-        }));
-    }
-
-    async fetchIncidents(since: Date): Promise<NormalizedIncident[]> {
-        return []; // Optional: return incidents if supported by provider
-    }
-
-    getPollingInterval(): number {
-        return this.pollIntervalMs;
-    }
-}
-```
-
-### Step 2: Register the Adapter in `src/hooks.server.ts`
-
-```typescript
-if (adapterType === 'uptimerobot') {
-    adapter = new UptimeRobotAdapter();
-    // ...
-} else if (adapterType === 'uptimekuma') {
-    adapter = new UptimeKumaAdapter();
-    // ...
-} else if (adapterType === 'myservice') {
-    adapter = new MyServiceAdapter();
-    await adapter.initialize({
-        apiKey: process.env.MY_SERVICE_API_KEY,
-        pollInterval: 30000
-    });
-} else {
-    adapter = new MockAdapter();
-    // ...
-}
-```
-
-### Step 3: Configure `.env`
-
-```env
-KATO_ADAPTER=myservice
-MY_SERVICE_API_KEY=your_secret_api_key
-```
-
----
-
-## 🧪 Testing & Verification
-
-```bash
-# Run unit tests (Node.js test runner)
+# Run unit test suite (Node.js native test runner)
 npm test
 
-# SvelteKit type checking
+# TypeScript & Svelte 5 strict check
 npm run check
 
-# Code linting
+# ESLint check
 npm run lint
 
-# Production build
+# Build production application & documentation site
 npm run build
+npm run docs:build
 ```
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE) © 2026 Jeremy.
+Released under the [MIT License](LICENSE) © 2026 Jeremy ([Kwaadpepper](https://github.com/Kwaadpepper)).

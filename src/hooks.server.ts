@@ -71,6 +71,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		pathname === '/manifest.json' ||
 		pathname === '/service-worker.js' ||
 		pathname === '/apple-touch-icon.png' ||
+		pathname === '/api/health' ||
 		pathname.startsWith('/icon-')
 	) return resolve(event);
 

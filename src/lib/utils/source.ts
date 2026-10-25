@@ -64,13 +64,17 @@ export function getSourceInitials(sourceName: string): string {
 	const trimmed = sourceName.trim();
 	if (!trimmed) return 'SRC';
 
+	const lower = trimmed.toLowerCase();
+	if (lower === 'uptimerobot') return 'UR';
+	if (lower === 'uptimekuma') return 'UK';
+
 	// Check for parenthetical identifier like "UptimeKuma (prod)" -> "UKP"
 	const parenMatch = trimmed.match(/^([^(]+)\(([^)]+)\)$/);
 	if (parenMatch) {
 		const mainInitials = getSourceInitials(parenMatch[1]).slice(0, 2);
 		const rawSub = parenMatch[2].trim();
-		const subTokens = rawSub.replace(/([a-z0-9])([A-Z])/g, '$1 $2').split(/[\s_\-]+/).filter(Boolean);
-		let subInitials = '';
+		const subTokens = rawSub.replace(/([a-z0-9])([A-Z])/g, '$1 $2').split(/[\s_-]+/).filter(Boolean);
+		let subInitials: string;
 		if (subTokens.length >= 2) {
 			subInitials = subTokens.map((t) => t[0]).join('').slice(0, 2);
 		} else if (rawSub.length <= 2) {
@@ -85,7 +89,7 @@ export function getSourceInitials(sourceName: string): string {
 	const spaced = trimmed.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
 
 	// Split by space, underscore, or hyphen
-	const tokens = spaced.split(/[\s_\-]+/).filter(Boolean);
+	const tokens = spaced.split(/[\s_-]+/).filter(Boolean);
 
 	if (tokens.length >= 2) {
 		// Take first letter or alphanumeric char of each token

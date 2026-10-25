@@ -115,7 +115,9 @@ class DashboardStore {
 		const incomingIds = new Set(probes.map((p) => p.id));
 		if (effectiveSource) {
 			for (const [id, existingProbe] of this.probes.entries()) {
-				if (existingProbe.source === effectiveSource && !incomingIds.has(id)) {
+				const matchesSource =
+					existingProbe.source === effectiveSource || id.startsWith(`${effectiveSource}:`);
+				if (matchesSource && !incomingIds.has(id)) {
 					this.probes.delete(id);
 					removedProbeIds.push(id);
 

@@ -9,6 +9,7 @@
     type TranslationKey,
   } from "$lib/i18n";
   import type { NormalizedProbe } from "$lib/types";
+  import { onAnonymizeChange, toggleAnonymize } from "$lib/utils/anonymize";
   import { onFullscreenChange, toggleFullscreen } from "$lib/utils/fullscreen";
   import {
     onNotificationChange,
@@ -28,6 +29,8 @@
   import Check from "lucide-svelte/icons/check";
   import CircleHelp from "lucide-svelte/icons/circle-help";
   import Download from "lucide-svelte/icons/download";
+  import Eye from "lucide-svelte/icons/eye";
+  import EyeOff from "lucide-svelte/icons/eye-off";
   import Grid2x2 from "lucide-svelte/icons/grid-2x2";
   import Maximize from "lucide-svelte/icons/maximize";
   import Minimize from "lucide-svelte/icons/minimize";
@@ -110,6 +113,7 @@
   let isNotificationOn = $state(false);
   let notificationPermission = $state<NotificationPermissionState>("unsupported");
   let isFullscreenActive = $state(false);
+  let isAnonymized = $state(false);
   let currentMarqueeSpeed = $state<MarqueeSpeed>("slow");
   let currentMarqueeDuration = $state(60);
   let isInstalled = $state(false);
@@ -149,6 +153,9 @@
     const unsubFullscreen = onFullscreenChange((fs) => {
       isFullscreenActive = fs;
     });
+    const unsubAnonymize = onAnonymizeChange((anon) => {
+      isAnonymized = anon;
+    });
     const unsubMarquee = onMarqueeChange((cfg) => {
       currentMarqueeSpeed = cfg.speed;
       currentMarqueeDuration = cfg.duration;
@@ -173,6 +180,7 @@
       unsubSound();
       unsubNotifications();
       unsubFullscreen();
+      unsubAnonymize();
       unsubMarquee();
       unsubClock();
       unsubPwa();
@@ -636,6 +644,32 @@
               {/if}
             </div>
             {#if isFullscreenActive}
+              <Check class="w-3.5 h-3.5 text-emerald-400" />
+            {/if}
+          </button>
+
+          <button
+            type="button"
+            onclick={() => {
+              isAnonymized = toggleAnonymize();
+            }}
+            class="w-full flex items-center justify-between px-3 py-1.5 text-left hover:bg-slate-800/30 transition-colors cursor-pointer {isAnonymized
+              ? 'text-emerald-400 font-medium'
+              : 'text-[var(--kato-text-primary)]'}"
+            aria-label={isAnonymized
+              ? t("settings.anonymizeDisableAria")
+              : t("settings.anonymizeEnableAria")}
+          >
+            <div class="flex items-center gap-2">
+              {#if isAnonymized}
+                <EyeOff class="w-3.5 h-3.5 text-emerald-400" />
+                <span>{t("settings.anonymizeActive")}</span>
+              {:else}
+                <Eye class="w-3.5 h-3.5" />
+                <span>{t("settings.anonymizeInactive")}</span>
+              {/if}
+            </div>
+            {#if isAnonymized}
               <Check class="w-3.5 h-3.5 text-emerald-400" />
             {/if}
           </button>

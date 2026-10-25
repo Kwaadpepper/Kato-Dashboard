@@ -21,6 +21,13 @@
     NormalizedProbe,
     ProbeStatus,
   } from "$lib/types";
+  import {
+    anonymizeIncidents,
+    anonymizeProbe,
+    anonymizeProbes,
+    isAnonymizeEnabled,
+    onAnonymizeChange,
+  } from "$lib/utils/anonymize";
   import { toggleFullscreen } from "$lib/utils/fullscreen";
   import { calculateGrid } from "$lib/utils/grid-calculator";
   import {
@@ -199,8 +206,26 @@
     forceZeroScroll = !forceZeroScroll;
   }
 
+  // Privacy / Screenshot anonymization mode (?anonymize=1 or settings toggle)
+  let isAnonymized = $state(
+    $page.url.searchParams.get("anonymize") === "1" ||
+      $page.url.searchParams.get("anonymize") === "true" ||
+      isAnonymizeEnabled(),
+  );
+
+  const displayedProbes = $derived(anonymizeProbes(probes, isAnonymized));
+  const displayedIncidents = $derived(
+    anonymizeIncidents(incidents, probes, isAnonymized),
+  );
+  const displayedSelectedProbe = $derived.by(() => {
+    if (!selectedProbe) return null;
+    if (!isAnonymized) return selectedProbe;
+    const idx = probes.findIndex((p) => p.id === selectedProbe!.id);
+    return anonymizeProbe(selectedProbe, idx >= 0 ? idx : undefined);
+  });
+
   // 1. Smart sort: DOWN first (top-left), then DEGRADED, UP by criticality, etc.
-  const sortedProbes = $derived(sortProbesSmart(probes));
+  const sortedProbes = $derived(sortProbesSmart(displayedProbes));
 
   // 2. Dynamic adaptive grid calculation (zero scroll)
   const layout: GridLayout = $derived(
@@ -453,6 +478,12 @@
     const unsubLocale = onLocaleChange((loc) => {
       currentLocale = loc;
     });
+    const unsubAnonymize = onAnonymizeChange((anon) => {
+      isAnonymized =
+        $page.url.searchParams.get("anonymize") === "1" ||
+        $page.url.searchParams.get("anonymize") === "true" ||
+        anon;
+    });
 
     return () => {
       if (disconnectSSE) disconnectSSE();
@@ -461,6 +492,7 @@
       if (observer) observer.disconnect();
       unsubTv();
       unsubLocale();
+      unsubAnonymize();
       cleanupInactivity();
       window.removeEventListener("probe-detail", handleCustomProbeDetail);
       window.removeEventListener("pointerdown", unlockHandler);
@@ -548,7 +580,7 @@
 
 <!-- Accessibility skip links (WCAG 2.1) -->
 <SkipLink
-  hasIncidents={incidents.filter((i) => i.resolvedAt === null).length > 0}
+  hasIncidents={displayedIncidents.filter((i) => i.resolvedAt === null).length > 0}
 />
 
 <!-- Strict fullscreen zero-scroll container (100vw / 100vh) on desktop -->
@@ -574,7 +606,7 @@
 >
   <!-- Fixed Header -->
   <Header
-    {probes}
+    probes={displayedProbes}
     {lastUpdate}
     compact={isCompactHeader}
     {connectionStatus}
@@ -666,13 +698,13 @@
   </main>
 
   <!-- Fixed lower IncidentBar -->
-  <IncidentBar {incidents} tvMode={isTvMode} />
+  <IncidentBar incidents={displayedIncidents} tvMode={isTvMode} />
 </div>
 
 <!-- Fullscreen modal on mobile / Side-panel on desktop -->
 <DetailModal
-  probe={selectedProbe}
-  {incidents}
+  probe={displayedSelectedProbe}
+  incidents={displayedIncidents}
   onclose={() => (selectedProbe = null)}
 />
 

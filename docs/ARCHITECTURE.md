@@ -68,11 +68,11 @@ flowchart LR
 
 ### Layer 1: Monitoring Adapters (Server-Side)
 
-*Source path:* [`src/lib/server/adapters/`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/server/adapters/)
+*Source path:* [`src/lib/server/adapters/`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/server/adapters/)
 
 The adapter layer implements the **Adapter Pattern**, isolating vendor-specific response payloads and guaranteeing an immutable, unified data contract to the application.
 
-#### Interface Definition ([`adapter.interface.ts`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/server/adapters/adapter.interface.ts))
+#### Interface Definition ([`adapter.interface.ts`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/server/adapters/adapter.interface.ts))
 
 ```typescript
 import type { NormalizedProbe, NormalizedIncident, AdapterConfig } from '$lib/types';
@@ -95,7 +95,7 @@ export interface MonitoringAdapter {
 }
 ```
 
-#### Normalized Models ([`src/lib/types/index.ts`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/types/index.ts))
+#### Normalized Models ([`src/lib/types/index.ts`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/types/index.ts))
 
 ```typescript
 export type ProbeStatus = 'up' | 'down' | 'degraded' | 'paused' | 'pending' | 'maintenance';
@@ -130,15 +130,15 @@ export interface NormalizedIncident {
 
 #### Implementations
 
-1. **[`uptime-robot.adapter.ts`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/server/adapters/uptime-robot.adapter.ts)**:
+1. **[`uptime-robot.adapter.ts`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/server/adapters/uptime-robot.adapter.ts)**:
    - Polls UptimeRobot REST API v3 using Bearer authentication (`GET /monitors`).
    - Translates status codes into normalized `ProbeStatus`.
    - Normalizes tags, target URLs, and groups.
-2. **[`uptime-kuma.adapter.ts`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/server/adapters/uptime-kuma.adapter.ts)**:
+2. **[`uptime-kuma.adapter.ts`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/server/adapters/uptime-kuma.adapter.ts)**:
    - Polls the UptimeKuma Prometheus `/metrics` endpoint using HTTP Basic Auth (empty username, API key as password).
    - Parses `monitor_status` and `monitor_response_time` Prometheus metrics without regex backtracking.
    - Derives probe ID from URL-encoded `monitor_name` label for stable cross-restart identity.
-3. **[`mock.adapter.ts`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/server/adapters/mock.adapter.ts)**:
+3. **[`mock.adapter.ts`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/server/adapters/mock.adapter.ts)**:
    - High-performance deterministic generator simulating 1 to 300+ monitors across categorized services (`Websites`, `APIs`, `Databases`, `Infrastructure`).
    - Introduces realistic latency fluctuations and configurable intermittent failure cycles for testing transitions, alerts, and high-density rendering.
 
@@ -146,7 +146,7 @@ export interface NormalizedIncident {
 
 ### Layer 2: In-Memory Store (Server-Side)
 
-*Source path:* [`src/lib/server/store.ts`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/server/store.ts)
+*Source path:* [`src/lib/server/store.ts`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/server/store.ts)
 
 The server store is a singleton operating in process RAM. It maintains canonical system state and performs fine-grained diff calculation (*delta detection*).
 
@@ -185,7 +185,7 @@ flowchart TD
 
 ### Layer 3: Poller Service (Server-Side)
 
-*Source path:* [`src/lib/server/poller.ts`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/server/poller.ts)
+*Source path:* [`src/lib/server/poller.ts`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/server/poller.ts)
 
 The poller executes on a recurring timer in the Node.js process:
 
@@ -198,7 +198,7 @@ The poller executes on a recurring timer in the Node.js process:
 
 ### Layer 4: SSE Endpoint (Server-Side)
 
-*Source path:* [`src/routes/api/events/+server.ts`](file:///var/www-jeremy/projets/kato-dashboard/src/routes/api/events/+server.ts)
+*Source path:* [`src/routes/api/events/+server.ts`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/routes/api/events/+server.ts)
 
 Exposes a streaming endpoint compliant with W3C Server-Sent Events.
 
@@ -224,7 +224,7 @@ X-Accel-Buffering: no
 
 ### Layer 5: Frontend Components & State (Client-Side)
 
-*Source path:* [`src/lib/components/`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/components/) & [`src/lib/utils/`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/utils/)
+*Source path:* [`src/lib/components/`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/components/) & [`src/lib/utils/`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/utils/)
 
 Built on **Svelte 5** reactive primitives using Runes:
 
@@ -235,7 +235,7 @@ Built on **Svelte 5** reactive primitives using Runes:
   - Optimal grid columns, rows, cell size, and density tier.
 - **`$effect`**: Manages the `EventSource` lifecycle, heartbeat timers, and keyboard navigation listeners.
 
-#### Zero-Scroll Adaptive Grid Engine ([`grid-calculator.ts`](file:///var/www-jeremy/projets/kato-dashboard/src/lib/utils/grid-calculator.ts))
+#### Zero-Scroll Adaptive Grid Engine ([`grid-calculator.ts`](https://github.com/Kwaadpepper/kato-dashboard/tree/main/src/lib/utils/grid-calculator.ts))
 
 Calculates optimal columns, rows, cell dimensions, and gaps to fit 100% of the viewport without overflowing:
 

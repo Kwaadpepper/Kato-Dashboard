@@ -183,8 +183,9 @@
     if (!serverIncidents || serverIncidents.length === 0) return base;
 
     const map = new Map<string, NormalizedIncident>();
-    for (const inc of base) map.set(inc.id, inc);
-    for (const inc of serverIncidents) map.set(inc.id, inc);
+    for (const inc of base) map.set(inc.id, { ...inc, probeName: probe.name });
+    for (const inc of serverIncidents)
+      map.set(inc.id, { ...inc, probeName: probe.name });
     return Array.from(map.values()).sort(
       (a, b) =>
         new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),

@@ -1,13 +1,19 @@
 services:
   kato:
-    # Option A: Run published image
+    # Option A: Run official pre-built image from GitHub Container Registry
     image: ghcr.io/kwaadpepper/kato-dashboard:latest
     # Option B: Build locally from source
     # build: .
-    # image: kato-dashboard:local
     container_name: kato-dashboard
     ports:
       - "${PORT:-3000}:3000"
+    # Load configuration from .env file (cp .env.example .env)
     env_file:
       - .env
+    # Or configure directly via environment variables (adapter is auto-detected!):
+    # environment:
+    #   UPTIME_KUMA_URL: "https://kuma.your-domain.com"
+    #   UPTIME_KUMA_API_KEY: "uk1_your_api_key"
+    #   KATO_DEFAULT_LOCALE: "en"
+    #   KATO_DEFAULT_THEME: "dark"
     restart: unless-stopped

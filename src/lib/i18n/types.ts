@@ -79,6 +79,10 @@ export interface TranslationSchema {
 		sectionDisplay: string;
 		fullscreenActive: string;
 		fullscreenInactive: string;
+		anonymizeActive: string;
+		anonymizeInactive: string;
+		anonymizeEnableAria: string;
+		anonymizeDisableAria: string;
 		sectionNotifications: string;
 		notificationsActive: string;
 		notificationsInactive: string;

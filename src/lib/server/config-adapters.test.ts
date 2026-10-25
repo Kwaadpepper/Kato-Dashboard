@@ -123,4 +123,36 @@ describe('Adapter Configuration Parser', () => {
 		assert.equal(appConfig.adapters.length, 1);
 		assert.equal(appConfig.adapters[0].type, 'mock');
 	});
+
+	it('should auto-detect uptimekuma when UPTIME_KUMA_URL is set without KATO_ADAPTER', () => {
+		const configs = loadAdaptersConfig({
+			UPTIME_KUMA_URL: 'https://status.internal.lan',
+			UPTIME_KUMA_API_KEY: 'uk1_token'
+		});
+		assert.equal(configs.length, 1);
+		assert.equal(configs[0].type, 'uptimekuma');
+		if (configs[0].type === 'uptimekuma') {
+			assert.equal(configs[0].baseUrl, 'https://status.internal.lan');
+			assert.equal(configs[0].apiKey, 'uk1_token');
+		}
+	});
+
+	it('should not auto-detect uptimekuma when UPTIME_KUMA_URL is the default placeholder', () => {
+		const configs = loadAdaptersConfig({
+			KATO_ADAPTER: 'mock',
+			UPTIME_KUMA_URL: 'https://kuma.example.com'
+		});
+		assert.equal(configs.length, 1);
+		assert.equal(configs[0].type, 'mock');
+	});
+
+	it('should auto-detect both uptimerobot and uptimekuma when both credentials are provided', () => {
+		const configs = loadAdaptersConfig({
+			UPTIMEROBOT_API_KEY: 'u99999-secret',
+			UPTIME_KUMA_URL: 'https://kuma.mycorp.io'
+		});
+		assert.equal(configs.length, 2);
+		assert.equal(configs[0].type, 'uptimerobot');
+		assert.equal(configs[1].type, 'uptimekuma');
+	});
 });

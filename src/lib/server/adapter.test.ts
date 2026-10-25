@@ -6,8 +6,7 @@ import {
     getAdapterByName,
     getAdapterForProbe,
     getAllAdapters,
-    registerAdapter,
-    setActiveAdapter
+    registerAdapter
 } from './adapter.ts';
 
 function createDummyAdapter(name: string, type?: string): MonitoringAdapter {

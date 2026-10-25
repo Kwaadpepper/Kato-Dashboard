@@ -198,9 +198,32 @@ export function loadAdaptersConfig(
 		}
 	}
 
-	// ── 2. Legacy / simple mode (KATO_ADAPTER or ADAPTER_TYPE) ───────────────
-	const legacyAdapters = (env.KATO_ADAPTER || env.ADAPTER_TYPE || 'mock').trim();
-	const tokens = legacyAdapters.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+	// ── 2. Legacy / simple mode (KATO_ADAPTER, ADAPTER_TYPE, or auto-detect) ─
+	const explicitAdapter = (env.KATO_ADAPTER || env.ADAPTER_TYPE || '').trim();
+	const rawUrKey = env.UPTIMEROBOT_API_KEY?.trim() ?? '';
+	const rawKumaUrl = env.UPTIME_KUMA_URL?.trim() ?? '';
+
+	const hasValidUrKey =
+		rawUrKey.length > 0 && rawUrKey.toLowerCase() !== 'your_uptimerobot_api_key_here';
+	const hasValidKumaUrl =
+		rawKumaUrl.length > 0 &&
+		rawKumaUrl.toLowerCase().replace(/\/$/, '') !== 'https://kuma.example.com';
+
+	let tokens: string[];
+	if (
+		(!explicitAdapter || explicitAdapter.toLowerCase() === 'mock') &&
+		(hasValidUrKey || hasValidKumaUrl)
+	) {
+		tokens = [];
+		if (hasValidUrKey) tokens.push('uptimerobot');
+		if (hasValidKumaUrl) tokens.push('uptimekuma');
+	} else {
+		const legacyAdapters = explicitAdapter || 'mock';
+		tokens = legacyAdapters
+			.split(',')
+			.map((s) => s.trim().toLowerCase())
+			.filter(Boolean);
+	}
 
 	for (const token of tokens) {
 		if (token === 'uptimerobot') {

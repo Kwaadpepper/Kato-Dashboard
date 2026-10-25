@@ -60,6 +60,7 @@ const BLUEPRINTS: ServiceBlueprint[] = [
 
 const GROUPS = ['Production', 'Staging', 'Infrastructure', 'APIs', 'Websites'];
 const CRITICALITIES: Criticality[] = ['critical', 'high', 'medium', 'low'];
+const DEMO_SOURCES = ['kuma-prod', 'kuma-lan', 'uptimerobot'] as const;
 
 /**
  * Mock monitoring adapter for development and visual validation.
@@ -177,10 +178,11 @@ export class MockAdapter implements MonitoringAdapter {
 			const responseTime = this.computeResponseTime(status);
 			const uptime24h = this.computeUptime(status, i * 7);
 			const uptime7d = this.computeUptime(status, i * 13);
+			const source = this.resolveSource(i);
 
 			const probe: NormalizedProbe = {
 				id,
-				source: this.name,
+				source,
 				name: blueprint.name,
 				url: blueprint.url,
 				status,
@@ -278,6 +280,18 @@ export class MockAdapter implements MonitoringAdapter {
 			criticality,
 			url: `https://${slug}.kato.internal`
 		};
+	}
+
+	/**
+	 * Resolves source provider identifier.
+	 * When running in default 'mock' demo mode, rotates across realistic multi-instance
+	 * sources ('kuma-prod', 'kuma-lan', 'uptimerobot') to showcase source badges out of the box.
+	 */
+	private resolveSource(index: number): string {
+		if (this.name !== 'mock') {
+			return this.name;
+		}
+		return DEMO_SOURCES[(index - 1) % DEMO_SOURCES.length];
 	}
 
 	/**

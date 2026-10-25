@@ -5,9 +5,13 @@ import { getSourceBadge, getSourceInitials } from './source.ts';
 describe('source utility module', () => {
 	it('should compute appropriate 2-4 letter initials for various provider names', () => {
 		assert.equal(getSourceInitials('Uptime Kuma'), 'UK');
+		assert.equal(getSourceInitials('uptimekuma'), 'UK');
 		assert.equal(getSourceInitials('UptimeRobot'), 'UR');
+		assert.equal(getSourceInitials('uptimerobot'), 'UR');
 		assert.equal(getSourceInitials('Uptime-Robot'), 'UR');
 		assert.equal(getSourceInitials('kuma_prod'), 'KP');
+		assert.equal(getSourceInitials('kuma-prod'), 'KP');
+		assert.equal(getSourceInitials('kuma-lan'), 'KL');
 		assert.equal(getSourceInitials('UptimeKuma (prod)'), 'UKP');
 		assert.equal(getSourceInitials('UptimeKuma (paris-1)'), 'UKP1');
 		assert.equal(getSourceInitials('mock'), 'MOCK');
