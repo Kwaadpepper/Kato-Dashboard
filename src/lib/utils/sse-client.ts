@@ -1,4 +1,4 @@
-import type { DashboardDelta, DashboardState } from '$lib/types';
+import type { DashboardDelta, DashboardState } from '#lib/types';
 
 export type ConnectionStatus = 'connected' | 'disconnected' | 'reconnecting';
 

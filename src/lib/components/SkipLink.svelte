@@ -5,7 +5,7 @@
     t as translate,
     type SupportedLocale,
     type TranslationKey,
-  } from "$lib/i18n";
+  } from "#lib/i18n";
   import { onMount } from "svelte";
 
   let {

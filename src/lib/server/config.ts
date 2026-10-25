@@ -8,7 +8,7 @@ import type {
     SupportedLocale,
     Theme,
     TimeFormat
-} from '$lib/types';
+} from '#lib/types';
 
 /**
  * Strict fallback defaults applied when corresponding environment variables are absent.

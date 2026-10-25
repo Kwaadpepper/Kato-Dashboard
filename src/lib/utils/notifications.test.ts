@@ -1,6 +1,6 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import type { NormalizedProbe } from '$lib/types';
+import type { NormalizedProbe } from '#lib/types';
 
 describe('notifications utility module', () => {
 	let mockStorage: Record<string, string> = {};

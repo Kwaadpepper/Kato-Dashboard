@@ -7,22 +7,22 @@
     t as translate,
     type SupportedLocale,
     type TranslationKey,
-  } from "$lib/i18n";
-  import type { NormalizedProbe } from "$lib/types";
-  import { onAnonymizeChange, toggleAnonymize } from "$lib/utils/anonymize";
-  import { onFullscreenChange, toggleFullscreen } from "$lib/utils/fullscreen";
+  } from "#lib/i18n";
+  import type { NormalizedProbe } from "#lib/types";
+  import { onAnonymizeChange, toggleAnonymize } from "#lib/utils/anonymize";
+  import { onFullscreenChange, toggleFullscreen } from "#lib/utils/fullscreen";
   import {
     onNotificationChange,
     toggleNotification,
     type NotificationPermissionState,
-  } from "$lib/utils/notifications";
+  } from "#lib/utils/notifications";
   import {
     isStandalone,
     onPwaChange,
     promptPwaInstall,
-  } from "$lib/utils/pwa";
-  import { onSoundChange, toggleSound } from "$lib/utils/sounds";
-  import { applyTheme, onThemeChange, type Theme } from "$lib/utils/theme";
+  } from "#lib/utils/pwa";
+  import { onSoundChange, toggleSound } from "#lib/utils/sounds";
+  import { applyTheme, onThemeChange, type Theme } from "#lib/utils/theme";
   import AppWindow from "lucide-svelte/icons/app-window";
   import Bell from "lucide-svelte/icons/bell";
   import BellOff from "lucide-svelte/icons/bell-off";
@@ -71,14 +71,14 @@
     setTimeZone,
     TIME_ZONE_PRESETS,
     type ClockConfig,
-  } from "$lib/utils/clock";
+  } from "#lib/utils/clock";
   import {
     MARQUEE_SPEED_PRESETS,
     onMarqueeChange,
     setMarqueeDuration,
     setMarqueeSpeed,
     type MarqueeSpeed,
-  } from "$lib/utils/marquee";
+  } from "#lib/utils/marquee";
 
   let clockConfig = $state<ClockConfig>({
     format: "24h",

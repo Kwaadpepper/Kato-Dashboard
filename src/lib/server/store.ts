@@ -1,4 +1,4 @@
-import type { DashboardDelta, DashboardState, NormalizedIncident, NormalizedProbe } from '$lib/types';
+import type { DashboardDelta, DashboardState, NormalizedIncident, NormalizedProbe } from '#lib/types';
 import { getDefaultClientSettings } from './config.ts';
 
 /** Rolling window duration for keeping incidents in RAM (24h in ms) */

@@ -1,4 +1,4 @@
-import type { AdapterInstanceConfig, MonitoringAdapter } from '$lib/types';
+import type { AdapterInstanceConfig, MonitoringAdapter } from '#lib/types';
 import { MockAdapter } from './mock.adapter';
 import { UptimeKumaAdapter } from './uptime-kuma.adapter';
 import { UptimeRobotAdapter } from './uptime-robot.adapter';

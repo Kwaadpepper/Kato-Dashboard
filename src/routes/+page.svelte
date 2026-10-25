@@ -1,26 +1,26 @@
 <script lang="ts">
   import { afterNavigate, goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import DetailModal from "$lib/components/DetailModal.svelte";
-  import Header from "$lib/components/Header.svelte";
-  import HelpModal from "$lib/components/HelpModal.svelte";
-  import IncidentBar from "$lib/components/IncidentBar.svelte";
-  import ProbeGrid from "$lib/components/ProbeGrid.svelte";
-  import SkipLink from "$lib/components/SkipLink.svelte";
+  import { page } from "$app/state";
+  import DetailModal from "#lib/components/DetailModal.svelte";
+  import Header from "#lib/components/Header.svelte";
+  import HelpModal from "#lib/components/HelpModal.svelte";
+  import IncidentBar from "#lib/components/IncidentBar.svelte";
+  import ProbeGrid from "#lib/components/ProbeGrid.svelte";
+  import SkipLink from "#lib/components/SkipLink.svelte";
   import {
     getLocale,
     onLocaleChange,
     t as translate,
     type SupportedLocale,
     type TranslationKey,
-  } from "$lib/i18n";
+  } from "#lib/i18n";
   import type {
     DashboardDelta,
     GridLayout,
     NormalizedIncident,
     NormalizedProbe,
     ProbeStatus,
-  } from "$lib/types";
+  } from "#lib/types";
   import {
     anonymizeIncidents,
     anonymizeProbe,
@@ -28,30 +28,30 @@
     isAnonymizeEnabled,
     onAnonymizeChange,
     setAnonymizeEnabled,
-  } from "$lib/utils/anonymize";
-  import { toggleFullscreen } from "$lib/utils/fullscreen";
-  import { calculateGrid } from "$lib/utils/grid-calculator";
+  } from "#lib/utils/anonymize";
+  import { toggleFullscreen } from "#lib/utils/fullscreen";
+  import { calculateGrid } from "#lib/utils/grid-calculator";
   import {
     emitMultipleStatusChangesNotification,
     emitProbeStatusNotification,
     toggleNotification,
-  } from "$lib/utils/notifications";
-  import { sortProbesSmart } from "$lib/utils/sort";
+  } from "#lib/utils/notifications";
+  import { sortProbesSmart } from "#lib/utils/sort";
   import {
     playAlertCritical,
     playAlertDown,
     playAlertRecovery,
     toggleSound,
     unlockAudio,
-  } from "$lib/utils/sounds";
-  import { connectSSE, type ConnectionStatus } from "$lib/utils/sse-client";
-  import { applyTheme, type Theme } from "$lib/utils/theme";
+  } from "#lib/utils/sounds";
+  import { connectSSE, type ConnectionStatus } from "#lib/utils/sse-client";
+  import { applyTheme, type Theme } from "#lib/utils/theme";
   import {
     enterTvMode,
     exitTvMode,
     onTvModeChange,
     startInactivityDetection,
-  } from "$lib/utils/tv-mode";
+  } from "#lib/utils/tv-mode";
   import ArrowDown from "lucide-svelte/icons/arrow-down";
   import LoaderCircle from "lucide-svelte/icons/loader-circle";
   import { onMount } from "svelte";
@@ -177,7 +177,7 @@
   // Main dashboard DOM container for anti burn-in and fullscreen
   let dashboardContainer: HTMLElement | null = $state(null);
   // Reads ?tv=1 URL parameter for initial state (SSR + hydration)
-  let isTvActiveState = $state($page.url.searchParams.get("tv") === "1");
+  let isTvActiveState = $state(page.url.searchParams.get("tv") === "1");
   const isTvMode = $derived(isTvActiveState);
 
   // Cleans ?tv=1 parameter from browser URL and SvelteKit router store
@@ -190,8 +190,7 @@
         currentUrl.pathname + (currentUrl.search ? currentUrl.search : ""),
         {
           replaceState: true,
-          keepFocus: true,
-          noScroll: true,
+          reset: false,
         },
       );
     }
@@ -209,8 +208,8 @@
 
   // Privacy / Screenshot anonymization mode (?anonymize=1 or settings toggle)
   let isAnonymized = $state(
-    $page.url.searchParams.get("anonymize") === "1" ||
-      $page.url.searchParams.get("anonymize") === "true" ||
+    page.url.searchParams.get("anonymize") === "1" ||
+      page.url.searchParams.get("anonymize") === "true" ||
       isAnonymizeEnabled(),
   );
 
@@ -448,7 +447,7 @@
     }
 
     // If tv=1: call enterTvMode() at mount with the grid container
-    if ($page.url.searchParams.get("tv") === "1") {
+    if (page.url.searchParams.get("tv") === "1") {
       void enterTvMode(gridContainer);
     }
 
@@ -462,7 +461,7 @@
 
     // Inactivity detection: reactivates TV mode after 30s of inactivity if ?tv=1 was requested
     let cleanupInactivity = () => {};
-    if ($page.url.searchParams.get("tv") === "1") {
+    if (page.url.searchParams.get("tv") === "1") {
       cleanupInactivity = startInactivityDetection(30_000, () => {
         void enterTvMode(gridContainer);
       });

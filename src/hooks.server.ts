@@ -1,12 +1,12 @@
-import { env } from '$env/dynamic/private';
-import { registerAdapter, setActiveAdapter } from '$lib/server/adapter';
-import { createAndInitAdapter } from '$lib/server/adapters/factory';
-import { isAuthEnabled, isValidSession, SESSION_COOKIE_NAME } from '$lib/server/auth';
-import { loadAdaptersConfig } from '$lib/server/config';
-import { startMultiPolling } from '$lib/server/poller';
-import { store } from '$lib/server/store';
-import type { MonitoringAdapter } from '$lib/types';
-import { redirect, type Handle } from '@sveltejs/kit';
+import { registerAdapter, setActiveAdapter } from '#lib/server/adapter';
+import { createAndInitAdapter } from '#lib/server/adapters/factory';
+import { isAuthEnabled, isValidSession, SESSION_COOKIE_NAME } from '#lib/server/auth';
+import { loadAdaptersConfig } from '#lib/server/config';
+import { startMultiPolling } from '#lib/server/poller';
+import { store } from '#lib/server/store';
+import type { MonitoringAdapter } from '#lib/types';
+import { redirect } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 
 // ============================================================================
 // SERVER STARTUP INITIALIZATION
@@ -16,7 +16,7 @@ import { redirect, type Handle } from '@sveltejs/kit';
  * Instantiates, initializes and starts background polling for all configured adapters.
  */
 async function bootstrap(): Promise<void> {
-	const adapterConfigs = loadAdaptersConfig(env as unknown as Record<string, string | undefined>);
+	const adapterConfigs = loadAdaptersConfig(process.env);
 	console.log(`[Kato] Loading ${adapterConfigs.length} configured adapter instance(s)...`);
 
 	const initializedAdapters: MonitoringAdapter[] = [];

@@ -5,17 +5,17 @@
     t as translate,
     type SupportedLocale,
     type TranslationKey,
-  } from "$lib/i18n";
-  import type { NormalizedIncident } from "$lib/types";
+  } from "#lib/i18n";
+  import type { NormalizedIncident } from "#lib/types";
   import {
     createIncidentQueue,
     formatIncidentDuration,
     type IncidentQueueState,
-  } from "$lib/utils/incident-queue";
+  } from "#lib/utils/incident-queue";
   import {
     getInitialMarqueeDuration,
     onMarqueeChange,
-  } from "$lib/utils/marquee";
+  } from "#lib/utils/marquee";
   import ChevronDown from "lucide-svelte/icons/chevron-down";
   import ChevronUp from "lucide-svelte/icons/chevron-up";
   import Pause from "lucide-svelte/icons/pause";

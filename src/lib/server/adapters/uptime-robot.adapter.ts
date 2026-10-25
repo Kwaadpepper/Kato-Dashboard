@@ -4,7 +4,7 @@ import type {
     NormalizedIncident,
     NormalizedProbe,
     ProbeStatus
-} from '$lib/types';
+} from '#lib/types';
 
 /**
  * Monitor structure returned by Uptime Robot REST API v3 (GET /monitors).

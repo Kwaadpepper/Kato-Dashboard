@@ -5,10 +5,10 @@
     t as translate,
     type SupportedLocale,
     type TranslationKey,
-  } from "$lib/i18n";
-  import type { NormalizedProbe, ProbeStatus } from "$lib/types";
-  import { STATUS_COLORS, getStatusLabel } from "$lib/utils/colors";
-  import { getProbeDotSize } from "$lib/utils/probe-dot";
+  } from "#lib/i18n";
+  import type { NormalizedProbe, ProbeStatus } from "#lib/types";
+  import { STATUS_COLORS, getStatusLabel } from "#lib/utils/colors";
+  import { getProbeDotSize } from "#lib/utils/probe-dot";
   import { onMount } from "svelte";
 
   let {

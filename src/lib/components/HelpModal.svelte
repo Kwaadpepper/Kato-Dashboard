@@ -3,15 +3,15 @@
 	import { marked } from 'marked';
 	import X from 'lucide-svelte/icons/x';
 	import CircleHelp from 'lucide-svelte/icons/circle-help';
-	import helpFr from '$lib/assets/help/help.fr.md?raw';
-	import helpEn from '$lib/assets/help/help.en.md?raw';
+	import helpFr from '#lib/assets/help/help.fr.md?raw';
+	import helpEn from '#lib/assets/help/help.en.md?raw';
 	import {
 		t as translate,
 		getLocale,
 		onLocaleChange,
 		type SupportedLocale,
 		type TranslationKey
-	} from '$lib/i18n';
+	} from '#lib/i18n';
 
 	let {
 		isOpen = false,

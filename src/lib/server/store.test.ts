@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { store } from './store.ts';
-import type { NormalizedProbe } from '$lib/types';
+import type { NormalizedProbe } from '#lib/types';
 
 describe('DashboardStore lifecycle and memory leak prevention', () => {
 	it('should cleanly register and deregister subscribers without leaks', () => {

@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { initLocale, onLocaleChange, type SupportedLocale } from "$lib/i18n";
-  import { initClockConfig } from "$lib/utils/clock";
-  import { initMarqueeConfig } from "$lib/utils/marquee";
-  import { initNotifications } from "$lib/utils/notifications";
-  import { initPwa } from "$lib/utils/pwa";
-  import { initSound } from "$lib/utils/sounds";
+  import { initLocale, onLocaleChange, type SupportedLocale } from "#lib/i18n";
+  import { initClockConfig } from "#lib/utils/clock";
+  import { initMarqueeConfig } from "#lib/utils/marquee";
+  import { initNotifications } from "#lib/utils/notifications";
+  import { initPwa } from "#lib/utils/pwa";
+  import { initSound } from "#lib/utils/sounds";
   import {
     applyTheme,
     getInitialTheme,
     onThemeChange,
     type ResolvedTheme,
     type Theme,
-  } from "$lib/utils/theme";
+  } from "#lib/utils/theme";
   import { onMount } from "svelte";
   import type { LayoutData } from "./$types";
   import "./layout.css";

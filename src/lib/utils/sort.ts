@@ -1,4 +1,4 @@
-import type { Criticality, NormalizedProbe, ProbeStatus } from '$lib/types';
+import type { Criticality, NormalizedProbe, ProbeStatus } from '#lib/types';
 
 /**
  * Operational status sort weights.

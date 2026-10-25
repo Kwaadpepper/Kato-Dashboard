@@ -1,4 +1,4 @@
-import type { MonitoringAdapter } from '$lib/types';
+import type { MonitoringAdapter } from '#lib/types';
 import type { DashboardStore } from './store';
 
 /**

@@ -1,4 +1,4 @@
-import type { GridDensity, GridInput, GridLayout } from '$lib/types';
+import type { GridDensity, GridInput, GridLayout } from '#lib/types';
 
 /**
  * Default Header bar height in pixels.

@@ -1,7 +1,7 @@
-import { getAdapterForProbe } from '$lib/server/adapter';
-import { isAuthEnabled, isValidSession, SESSION_COOKIE_NAME } from '$lib/server/auth';
-import { store } from '$lib/server/store';
-import type { NormalizedIncident } from '$lib/types';
+import { getAdapterForProbe } from '#lib/server/adapter';
+import { isAuthEnabled, isValidSession, SESSION_COOKIE_NAME } from '#lib/server/auth';
+import { store } from '#lib/server/store';
+import type { NormalizedIncident } from '#lib/types';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

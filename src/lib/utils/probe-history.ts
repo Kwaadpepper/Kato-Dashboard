@@ -4,7 +4,7 @@ import type {
     ProbeStatusEvent,
     SupportedLocale,
     UptimeBarSlot
-} from '$lib/types';
+} from '#lib/types';
 
 /**
  * Summary statistics for probe availability history over a sliding 24-hour window.

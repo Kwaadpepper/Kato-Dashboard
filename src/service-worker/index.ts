@@ -1,15 +1,20 @@
-/// <reference types="@sveltejs/kit" />
 /// <reference no-default-lib="true"/>
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import { build, files, version } from '$service-worker';
+import { self } from '$app/service-worker';
+import { version } from '$app/env';
+import { immutable, assets } from '$app/manifest';
+import { resolve } from '$app/paths';
 
-const sw = self as unknown as ServiceWorkerGlobalScope;
+const sw = self;
 const CACHE_NAME = `kato-cache-v${version}`;
 
-// Assets to cache immediately on service worker installation
-const PRECACHE_ASSETS = [...build, ...files];
+// Resolve manifest assets to absolute pathnames
+const PRECACHE_ASSETS = [
+	...immutable.map((asset) => resolve(asset.path)),
+	...assets.map((asset) => resolve(asset.path))
+];
 
 sw.addEventListener('install', (event: ExtendableEvent) => {
 	event.waitUntil(

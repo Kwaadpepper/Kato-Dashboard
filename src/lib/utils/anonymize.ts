@@ -1,4 +1,4 @@
-import type { NormalizedIncident, NormalizedProbe } from '$lib/types';
+import type { NormalizedIncident, NormalizedProbe } from '#lib/types';
 
 export const ANONYMIZE_STORAGE_KEY = 'kato-anonymize-enabled';
 

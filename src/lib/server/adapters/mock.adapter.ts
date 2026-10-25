@@ -5,7 +5,7 @@ import type {
     NormalizedIncident,
     NormalizedProbe,
     ProbeStatus
-} from '$lib/types';
+} from '#lib/types';
 
 /**
  * Service blueprints to generate realistic names and configurations.

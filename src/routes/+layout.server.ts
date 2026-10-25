@@ -1,4 +1,4 @@
-import { getDefaultClientSettings } from '$lib/server/config';
+import { getDefaultClientSettings } from '#lib/server/config';
 import type { LayoutServerLoad } from './$types';
 
 /**

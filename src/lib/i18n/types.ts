@@ -1,4 +1,4 @@
-import type { SupportedLocale } from '$lib/types';
+import type { SupportedLocale } from '#lib/types';
 
 export type { SupportedLocale };
 

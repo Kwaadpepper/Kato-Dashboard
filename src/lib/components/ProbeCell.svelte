@@ -5,11 +5,11 @@
     t as translate,
     type SupportedLocale,
     type TranslationKey,
-  } from "$lib/i18n";
-  import type { GridDensity, NormalizedProbe, ProbeStatus } from "$lib/types";
-  import { STATUS_COLORS, getStatusLabel } from "$lib/utils/colors";
-  import { getSourceBadge } from "$lib/utils/source";
-  import { cleanDisplayUrl } from "$lib/utils/url-cleaner";
+  } from "#lib/i18n";
+  import type { GridDensity, NormalizedProbe, ProbeStatus } from "#lib/types";
+  import { STATUS_COLORS, getStatusLabel } from "#lib/utils/colors";
+  import { getSourceBadge } from "#lib/utils/source";
+  import { cleanDisplayUrl } from "#lib/utils/url-cleaner";
   import CircleCheck from "lucide-svelte/icons/circle-check";
   import CirclePause from "lucide-svelte/icons/circle-pause";
   import CircleX from "lucide-svelte/icons/circle-x";

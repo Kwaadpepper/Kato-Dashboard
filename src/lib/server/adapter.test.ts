@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { beforeEach, describe, it } from 'node:test';
-import type { MonitoringAdapter, NormalizedProbe } from '$lib/types';
+import type { MonitoringAdapter, NormalizedProbe } from '#lib/types';
 import {
     clearAdapters,
     getAdapterByName,

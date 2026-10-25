@@ -1,4 +1,4 @@
-import type { DashboardDelta, DashboardState } from '$lib/types';
+import type { DashboardDelta, DashboardState } from '#lib/types';
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 import { connectSSE, type ConnectionStatus } from './sse-client.ts';

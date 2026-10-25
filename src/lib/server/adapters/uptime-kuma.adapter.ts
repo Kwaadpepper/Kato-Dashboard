@@ -4,7 +4,7 @@ import type {
     NormalizedIncident,
     NormalizedProbe,
     ProbeStatus
-} from '$lib/types';
+} from '#lib/types';
 
 /** Parsed line from the Prometheus /metrics endpoint */
 interface ParsedMetric {

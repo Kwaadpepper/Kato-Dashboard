@@ -1,9 +1,9 @@
 <script lang="ts">
-  import ProbeCell from "$lib/components/ProbeCell.svelte";
-  import ProbeDot from "$lib/components/ProbeDot.svelte";
-  import { t } from "$lib/i18n";
-  import type { GridLayout, NormalizedProbe, ProbeStatus } from "$lib/types";
-  import { calculateNextGridIndex } from "$lib/utils/keyboard-grid";
+  import ProbeCell from "#lib/components/ProbeCell.svelte";
+  import ProbeDot from "#lib/components/ProbeDot.svelte";
+  import { t } from "#lib/i18n";
+  import type { GridLayout, NormalizedProbe, ProbeStatus } from "#lib/types";
+  import { calculateNextGridIndex } from "#lib/utils/keyboard-grid";
 
   let {
     probes = [],

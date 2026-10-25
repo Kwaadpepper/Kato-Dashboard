@@ -8,7 +8,7 @@
  * - Seconds display toggle (showSeconds)
  */
 
-import type { SupportedLocale } from '$lib/types';
+import type { SupportedLocale } from '#lib/types';
 
 export type TimeFormat = '24h' | '12h';
 

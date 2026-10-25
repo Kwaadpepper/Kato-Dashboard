@@ -1,4 +1,4 @@
-import type { Theme } from '$lib/types';
+import type { Theme } from '#lib/types';
 
 export type { Theme };
 export type ResolvedTheme = 'dark' | 'light' | 'amoled';

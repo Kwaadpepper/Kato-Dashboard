@@ -1,4 +1,4 @@
-import type { ProbeStatus, SupportedLocale } from '$lib/types';
+import type { ProbeStatus, SupportedLocale } from '#lib/types';
 import { t } from '../i18n/index.ts';
 
 /**

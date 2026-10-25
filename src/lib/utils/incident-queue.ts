@@ -7,7 +7,7 @@
  * - Buffered queue (pending queue) for newly opened or resolved incidents
  */
 
-import type { NormalizedIncident, SupportedLocale } from '$lib/types';
+import type { NormalizedIncident, SupportedLocale } from '#lib/types';
 
 export interface DisplayedIncident {
 	id: string;

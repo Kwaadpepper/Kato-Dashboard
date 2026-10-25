@@ -5,24 +5,24 @@
     t as translate,
     type SupportedLocale,
     type TranslationKey,
-  } from "$lib/i18n";
-  import type { NormalizedIncident, NormalizedProbe } from "$lib/types";
+  } from "#lib/i18n";
+  import type { NormalizedIncident, NormalizedProbe } from "#lib/types";
   import {
     anonymizeIncidentCause,
     anonymizeProbeId,
     getAnonymousBlueprint,
     isAnonymizeEnabled,
     onAnonymizeChange,
-  } from "$lib/utils/anonymize";
-  import { STATUS_COLORS, getStatusLabel } from "$lib/utils/colors";
+  } from "#lib/utils/anonymize";
+  import { STATUS_COLORS, getStatusLabel } from "#lib/utils/colors";
   import {
     build24hSlots,
     buildProbeHistoryEvents,
     computeProbeHistoryStats,
     formatDurationCompact,
     formatEventDateTime,
-  } from "$lib/utils/probe-history";
-  import { getSourceBadge } from "$lib/utils/source";
+  } from "#lib/utils/probe-history";
+  import { getSourceBadge } from "#lib/utils/source";
   import Activity from "lucide-svelte/icons/activity";
   import CircleCheck from "lucide-svelte/icons/circle-check";
   import Clock from "lucide-svelte/icons/clock";

@@ -4,7 +4,7 @@
  * and dispatching notifications when probe statuses change.
  */
 
-import type { NormalizedProbe, ProbeStatus, SupportedLocale } from '$lib/types';
+import type { NormalizedProbe, ProbeStatus, SupportedLocale } from '#lib/types';
 
 export const NOTIFICATION_STORAGE_KEY = 'kato-notifications-enabled';
 

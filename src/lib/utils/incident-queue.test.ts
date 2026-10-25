@@ -1,4 +1,4 @@
-import type { NormalizedIncident } from '$lib/types';
+import type { NormalizedIncident } from '#lib/types';
 import assert from 'node:assert/strict';
 import { beforeEach, describe, it } from 'node:test';
 import {

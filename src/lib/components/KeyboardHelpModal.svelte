@@ -5,7 +5,7 @@
     t as translate,
     type SupportedLocale,
     type TranslationKey,
-  } from "$lib/i18n";
+  } from "#lib/i18n";
   import Keyboard from "lucide-svelte/icons/keyboard";
   import X from "lucide-svelte/icons/x";
   import { onMount } from "svelte";

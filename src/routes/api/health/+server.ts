@@ -1,4 +1,4 @@
-import { store } from '$lib/server/store';
+import { store } from '#lib/server/store';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

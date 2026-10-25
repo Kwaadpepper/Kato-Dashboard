@@ -1,5 +1,5 @@
-import { isAuthEnabled, isValidSession, SESSION_COOKIE_NAME } from '$lib/server/auth';
-import { store } from '$lib/server/store';
+import { isAuthEnabled, isValidSession, SESSION_COOKIE_NAME } from '#lib/server/auth';
+import { store } from '#lib/server/store';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = ({ cookies, request }) => {
