@@ -7,6 +7,13 @@
     type TranslationKey,
   } from "$lib/i18n";
   import type { NormalizedIncident, NormalizedProbe } from "$lib/types";
+  import {
+    anonymizeIncidentCause,
+    anonymizeProbeId,
+    getAnonymousBlueprint,
+    isAnonymizeEnabled,
+    onAnonymizeChange,
+  } from "$lib/utils/anonymize";
   import { STATUS_COLORS, getStatusLabel } from "$lib/utils/colors";
   import {
     build24hSlots,
@@ -37,6 +44,7 @@
   } = $props();
 
   let activeLocale = $state<SupportedLocale>(getLocale());
+  let isAnonymized = $state(isAnonymizeEnabled());
   const t = (
     key: TranslationKey | string,
     params?: Record<string, string | number>,
@@ -57,9 +65,16 @@
   const sourceBadge = $derived(probe ? getSourceBadge(probe.source) : null);
 
   onMount(() => {
-    return onLocaleChange((loc) => {
+    const unsubLocale = onLocaleChange((loc) => {
       activeLocale = loc;
     });
+    const unsubAnon = onAnonymizeChange((anon) => {
+      isAnonymized = anon;
+    });
+    return () => {
+      unsubLocale();
+      unsubAnon();
+    };
   });
 
   // Escape key handling and focus trap (Tab / Shift+Tab looping) - WCAG / accessibility compliance
@@ -182,10 +197,19 @@
     const base = incidents.filter((i) => i.probeId === probe.id);
     if (!serverIncidents || serverIncidents.length === 0) return base;
 
+    const blueprint = getAnonymousBlueprint(probe.id);
     const map = new Map<string, NormalizedIncident>();
     for (const inc of base) map.set(inc.id, { ...inc, probeName: probe.name });
-    for (const inc of serverIncidents)
-      map.set(inc.id, { ...inc, probeName: probe.name });
+    for (const inc of serverIncidents) {
+      const cause = isAnonymized
+        ? anonymizeIncidentCause(inc.cause, blueprint)
+        : inc.cause;
+      map.set(inc.id, {
+        ...inc,
+        probeName: probe.name,
+        ...(cause !== undefined ? { cause } : {}),
+      });
+    }
     return Array.from(map.values()).sort(
       (a, b) =>
         new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
@@ -664,7 +688,9 @@
           >
             <div class="flex justify-between">
               <span>{t("detailModal.probeId")}</span>
-              <span class="text-slate-300 select-all">{probe.id}</span>
+              <span class="text-slate-300 select-all"
+                >{anonymizeProbeId(probe.id, undefined, isAnonymized)}</span
+              >
             </div>
             <div class="flex justify-between items-center">
               <span>{t("detailModal.source")}</span>

@@ -165,8 +165,25 @@ export class IncidentQueueManager {
 			}
 			this.notify();
 		} else {
-			// Scrolling in progress: buffer in pendingQueue until cycle finishes
-			this.pendingQueue = active;
+			// Always synchronize probeName in-place for currently displayed incidents
+			// so toggling Privacy Mode (?anonymize=1) updates the scrolling marquee immediately.
+			const activeById = new Map(active.map((inc) => [inc.id, inc]));
+			this.displayed = this.displayed.map((item) => {
+				const match = activeById.get(item.id);
+				return match && match.probeName !== item.probeName
+					? { ...item, probeName: match.probeName }
+					: item;
+			});
+
+			const sameIdSequence =
+				this.pendingQueue === null &&
+				active.length === this.displayed.length &&
+				active.every((inc, i) => inc.id === this.displayed[i].id);
+
+			if (!sameIdSequence) {
+				// Structural change in active incidents: buffer in pendingQueue until cycle finishes
+				this.pendingQueue = active;
+			}
 			this.notify();
 		}
 	}

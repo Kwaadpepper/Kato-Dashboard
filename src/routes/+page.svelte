@@ -27,6 +27,7 @@
     anonymizeProbes,
     isAnonymizeEnabled,
     onAnonymizeChange,
+    setAnonymizeEnabled,
   } from "$lib/utils/anonymize";
   import { toggleFullscreen } from "$lib/utils/fullscreen";
   import { calculateGrid } from "$lib/utils/grid-calculator";
@@ -219,9 +220,10 @@
   );
   const displayedSelectedProbe = $derived.by(() => {
     if (!selectedProbe) return null;
-    if (!isAnonymized) return selectedProbe;
     const idx = probes.findIndex((p) => p.id === selectedProbe!.id);
-    return anonymizeProbe(selectedProbe, idx >= 0 ? idx : undefined);
+    const rawProbe = idx >= 0 ? probes[idx] : selectedProbe;
+    if (!isAnonymized) return rawProbe;
+    return anonymizeProbe(rawProbe, idx >= 0 ? idx : undefined);
   });
 
   // 1. Smart sort: DOWN first (top-left), then DEGRADED, UP by criticality, etc.
@@ -342,7 +344,11 @@
           if (statusChangedProbes.length > 0) {
             if (statusChangedProbes.length <= 3) {
               for (const { probe, oldStatus } of statusChangedProbes) {
-                emitProbeStatusNotification(probe, oldStatus, probe.status, {
+                const idx = probes.findIndex((p) => p.id === probe.id);
+                const notifiedProbe = isAnonymized
+                  ? anonymizeProbe(probe, idx >= 0 ? idx : undefined)
+                  : probe;
+                emitProbeStatusNotification(notifiedProbe, oldStatus, probe.status, {
                   locale: currentLocale,
                   onClick: () => {
                     if (!isTvMode) {
@@ -479,10 +485,7 @@
       currentLocale = loc;
     });
     const unsubAnonymize = onAnonymizeChange((anon) => {
-      isAnonymized =
-        $page.url.searchParams.get("anonymize") === "1" ||
-        $page.url.searchParams.get("anonymize") === "true" ||
-        anon;
+      isAnonymized = anon;
     });
 
     return () => {
@@ -501,11 +504,15 @@
     };
   });
 
-  // Monitor route changes (?tv=1) via afterNavigate
+  // Monitor route changes (?tv=1, ?anonymize=1) via afterNavigate
   afterNavigate(({ to }) => {
     const shouldEnterTv = to?.url.searchParams.get("tv") === "1";
     if (shouldEnterTv && !isTvActiveState) {
       void enterTvMode(gridContainer);
+    }
+    if (to?.url.searchParams.has("anonymize")) {
+      const flag = to.url.searchParams.get("anonymize");
+      setAnonymizeEnabled(flag === "1" || flag === "true");
     }
   });
 

@@ -104,4 +104,32 @@ describe('Adapter Registry', () => {
 		assert.equal(getAdapterForProbe('uk:service_status'), kuma);
 		assert.equal(getAdapterForProbe('mock:1'), mock);
 	});
+
+	it('should resolve mock:3 to mock adapter even when probe.source is uptimerobot in multi-source demo mode', () => {
+		const mock = createDummyAdapter('mock', 'mock');
+		const robot = createDummyAdapter('uptimerobot', 'uptimerobot');
+
+		registerAdapter(mock);
+		registerAdapter(robot);
+
+		const demoProbe: NormalizedProbe = {
+			id: 'mock:3',
+			source: 'uptimerobot',
+			name: 'Billing & Subscriptions',
+			url: 'https://billing.kato.internal',
+			status: 'degraded',
+			responseTime: 390,
+			uptime24h: 97.9,
+			uptime7d: 98.4,
+			lastCheck: new Date().toISOString(),
+			group: 'APIs',
+			criticality: 'critical'
+		};
+
+		const mockStore = {
+			getProbe: (id: string) => (id === 'mock:3' ? demoProbe : undefined)
+		};
+
+		assert.equal(getAdapterForProbe('mock:3', mockStore), mock);
+	});
 });

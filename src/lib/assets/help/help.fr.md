@@ -54,3 +54,4 @@ Depuis le menu des paramètres (icône engrenage dans la barre supérieure) :
 4. **Vitesse du bandeau** : Préréglages Rapide, Normal, Lent ou ajustement fin de la durée (15s à 120s).
 5. **Horloge & Fuseau horaire** : Format 24h ou 12h, affichage des secondes et sélection de votre fuseau horaire de référence.
 6. **Notifications de bureau** : Alertes pop-up de bureau lors des changements d'état des sondes (UP, DOWN, DEGRADED).
+7. **Mode Anonymisation (Capture)** : Masque les noms, URLs et groupes sensibles par des intitulés génériques lors d'une capture d'écran.

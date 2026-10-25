@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress';
 
 export default defineConfig({
 	title: 'Kato Dashboard',
-	description: 'High-density zero-scroll monitoring wallboard for NOCs, TVs, and workstations.',
+	description: 'High-density zero-scroll monitoring wallboard for TVs, NOCs, and workstations.',
 	base: '/kato-dashboard/',
 	cleanUrls: true,
 	head: [
@@ -15,7 +15,7 @@ export default defineConfig({
 			{
 				property: 'og:description',
 				content:
-					'Visualize 1 to 200+ probes on a single screen with zero scrolling. Built with Svelte 5, SSE, and multi-source aggregation for Uptime Kuma & UptimeRobot.'
+					'Display all your Uptime Kuma and UptimeRobot monitors on a single screen with zero scrolling.'
 			}
 		],
 		[
@@ -47,27 +47,16 @@ export default defineConfig({
 					{ text: 'Quick Start', link: '/guide/getting-started' },
 					{ text: 'Providers', link: '/guide/providers' },
 					{ text: 'Features', link: '/guide/features' },
-					{ text: 'Architecture', link: '/ARCHITECTURE' }
+					{ text: 'Configuration', link: '/guide/configuration' }
 				],
 				sidebar: [
 					{
-						text: 'Getting Started',
+						text: 'User Guide',
 						items: [
-							{ text: 'Quick Start (30s)', link: '/guide/getting-started' },
-							{ text: 'Monitoring Providers', link: '/guide/providers' },
-							{ text: 'Features & Modes', link: '/guide/features' },
-							{ text: 'Environment Reference', link: '/guide/configuration' }
-						]
-					},
-					{
-						text: 'Technical Reference',
-						items: [
-							{ text: 'System Architecture', link: '/ARCHITECTURE' },
-							{ text: 'Zero-Scroll Grid Engine', link: '/GRID_ALGORITHM' },
-							{ text: 'Data Model & SSE', link: '/DATA_MODEL' },
-							{ text: 'Colors & Themes', link: '/COLORS_AND_THEME' },
-							{ text: 'UX Components', link: '/UX_COMPONENTS' },
-							{ text: 'UptimeRobot API Notes', link: '/UPTIME_ROBOT_API' }
+							{ text: 'Quick Start', link: '/guide/getting-started' },
+							{ text: 'Monitoring Sources', link: '/guide/providers' },
+							{ text: 'Features & TV Mode', link: '/guide/features' },
+							{ text: 'Environment Variables', link: '/guide/configuration' }
 						]
 					}
 				],
@@ -82,30 +71,23 @@ export default defineConfig({
 			lang: 'fr-FR',
 			link: '/fr/',
 			title: 'Kato Dashboard',
-			description: 'Wallboard de supervision haute densité zéro-scroll pour écrans TV, NOC et postes opérateurs.',
+			description: 'Wallboard de supervision haute densité zéro-scroll pour écrans TV et NOC.',
 			themeConfig: {
 				nav: [
 					{ text: 'Accueil', link: '/fr/' },
 					{ text: 'Démarrage rapide', link: '/fr/guide/getting-started' },
-					{ text: 'Sources & Adaptateurs', link: '/fr/guide/providers' },
+					{ text: 'Sources', link: '/fr/guide/providers' },
 					{ text: 'Fonctionnalités', link: '/fr/guide/features' },
-					{ text: 'Architecture', link: '/fr/architecture' }
+					{ text: 'Configuration', link: '/fr/guide/configuration' }
 				],
 				sidebar: [
 					{
-						text: 'Guide de mise en œuvre',
+						text: 'Guide Utilisateur',
 						items: [
-							{ text: 'Démarrage en 30 secondes', link: '/fr/guide/getting-started' },
+							{ text: 'Démarrage rapide', link: '/fr/guide/getting-started' },
 							{ text: 'Connecter vos sources', link: '/fr/guide/providers' },
-							{ text: 'Fonctionnalités & Modes', link: '/fr/guide/features' },
+							{ text: 'Fonctionnalités & Mode TV', link: '/fr/guide/features' },
 							{ text: 'Variables d’environnement', link: '/fr/guide/configuration' }
-						]
-					},
-					{
-						text: 'Référence Technique',
-						items: [
-							{ text: 'Architecture & Algorithme', link: '/fr/architecture' },
-							{ text: 'Spécifications détaillées (EN)', link: '/ARCHITECTURE' }
 						]
 					}
 				],

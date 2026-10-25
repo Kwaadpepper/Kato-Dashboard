@@ -46,6 +46,8 @@ const ANONYMOUS_BLUEPRINTS: readonly AnonymousBlueprint[] = [
 type AnonymizeListener = (enabled: boolean) => void;
 const listeners = new Set<AnonymizeListener>();
 let anonymizeState = false;
+let hasExplicitOverride = false;
+let lastSeenSearch: string | null = null;
 
 /**
  * Deterministic string hash -> non-negative integer.
@@ -84,24 +86,35 @@ export function getAnonymousBlueprint(probeId: string, index?: number): Anonymou
 
 /**
  * Checks whether privacy / screenshot anonymization mode is active.
- * Supports `?anonymize=1` URL parameter or `localStorage` persistence.
+ * Supports `?anonymize=1` URL parameter or `localStorage` persistence,
+ * while allowing interactive toggling via `setAnonymizeEnabled` / `toggleAnonymize`.
  */
 export function isAnonymizeEnabled(): boolean {
 	if (typeof window === 'undefined') return anonymizeState;
 
 	try {
-		const params = new URLSearchParams(window.location.search);
-		const urlFlag = params.get('anonymize');
-		if (urlFlag === '1' || urlFlag === 'true') {
-			anonymizeState = true;
-			return true;
-		}
-		if (urlFlag === '0' || urlFlag === 'false') {
-			anonymizeState = false;
-			return false;
+		const currentSearch = window.location?.search ?? '';
+		if (currentSearch !== lastSeenSearch) {
+			lastSeenSearch = currentSearch;
+			const params = new URLSearchParams(currentSearch);
+			const urlFlag = params.get('anonymize');
+			if (urlFlag === '1' || urlFlag === 'true') {
+				anonymizeState = true;
+				hasExplicitOverride = true;
+				return true;
+			}
+			if (urlFlag === '0' || urlFlag === 'false') {
+				anonymizeState = false;
+				hasExplicitOverride = true;
+				return false;
+			}
 		}
 	} catch {
 		// Ignore URL parsing errors
+	}
+
+	if (hasExplicitOverride) {
+		return anonymizeState;
 	}
 
 	try {
@@ -122,7 +135,14 @@ export function isAnonymizeEnabled(): boolean {
  */
 export function setAnonymizeEnabled(enabled: boolean): void {
 	anonymizeState = enabled;
+	hasExplicitOverride = true;
+
 	if (typeof window !== 'undefined') {
+		try {
+			lastSeenSearch = window.location?.search ?? '';
+		} catch {
+			// Ignore location access errors
+		}
 		try {
 			localStorage.setItem(ANONYMIZE_STORAGE_KEY, String(enabled));
 		} catch {
@@ -160,6 +180,85 @@ export function onAnonymizeChange(listener: AnonymizeListener): () => void {
 }
 
 /**
+ * Formats a probe ID for safe display in Privacy Mode.
+ * Preserves numeric suffixes (e.g. `mock:12`, `kuma_prod:42`) while replacing
+ * encoded monitor names (such as Uptime Kuma's `uk:Secret%20Internal%20Service`)
+ * with a deterministic numeric identifier.
+ */
+export function anonymizeProbeId(
+	probeId: string,
+	index?: number,
+	enabled: boolean = isAnonymizeEnabled()
+): string {
+	if (!enabled || !probeId) return probeId;
+	const colonIdx = probeId.indexOf(':');
+	if (colonIdx === -1) {
+		return /^\d+$/.test(probeId)
+			? probeId
+			: `probe:${typeof index === 'number' && index >= 0 ? index + 1 : (hashId(probeId) % 900) + 100}`;
+	}
+	const prefix = probeId.slice(0, colonIdx);
+	const suffix = probeId.slice(colonIdx + 1);
+	if (/^\d+$/.test(suffix)) {
+		return probeId;
+	}
+	const anonNum =
+		typeof index === 'number' && index >= 0 ? index + 1 : (hashId(probeId) % 900) + 100;
+	return `${prefix}:${anonNum}`;
+}
+
+/**
+ * Scrubs sensitive URLs, IPv4 addresses, hostnames, or raw probe names from an incident cause
+ * while keeping HTTP status codes and technical error descriptions intact.
+ */
+export function anonymizeIncidentCause(
+	cause: string | undefined,
+	blueprint: AnonymousBlueprint,
+	rawProbe?: Pick<NormalizedProbe, 'name' | 'url'>
+): string | undefined {
+	if (!cause) return cause;
+	let scrubbed = cause;
+
+	let anonHost = 'service.acme-corp.internal';
+	try {
+		anonHost = new URL(blueprint.url).host || anonHost;
+	} catch {
+		// Fallback host
+	}
+
+	if (rawProbe?.url) {
+		scrubbed = scrubbed.split(rawProbe.url).join(blueprint.url);
+		try {
+			const rawHost = new URL(rawProbe.url).hostname;
+			if (rawHost) {
+				scrubbed = scrubbed.split(rawHost).join(anonHost);
+			}
+		} catch {
+			// Ignore invalid URL
+		}
+	}
+	if (rawProbe?.name && rawProbe.name.length >= 3) {
+		scrubbed = scrubbed.split(rawProbe.name).join(blueprint.name);
+	}
+
+	// Scrub embedded URLs
+	scrubbed = scrubbed.replace(/[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^\s)]+/g, blueprint.url);
+	// Scrub IPv4 addresses (with optional port)
+	scrubbed = scrubbed.replace(/\b\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?\b/g, anonHost);
+	// Scrub FQDNs / internal hostnames (e.g. db.secret.corp or node-1.lan:5432)
+	scrubbed = scrubbed.replace(
+		/\b[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?::\d+)?\b/g,
+		(match) => {
+			// Preserve decimal numbers like "99.95"
+			if (/^\d+\.\d+$/.test(match)) return match;
+			return anonHost;
+		}
+	);
+
+	return scrubbed;
+}
+
+/**
  * Returns an anonymized copy of a probe (replacing name, url, and group deterministically)
  * while preserving real status, latency, uptime, criticality, and source badge.
  */
@@ -186,7 +285,7 @@ export function anonymizeProbes(
 
 /**
  * Returns an anonymized list of incidents when `enabled` is true.
- * Maps incident `probeName` to match the corresponding anonymized probe name.
+ * Maps incident `probeName` and `cause` to match the corresponding anonymized probe.
  */
 export function anonymizeIncidents(
 	incidents: NormalizedIncident[],
@@ -196,16 +295,21 @@ export function anonymizeIncidents(
 	if (!enabled) return incidents;
 
 	const indexById = new Map<string, number>();
+	const probeById = new Map<string, NormalizedProbe>();
 	for (let i = 0; i < probes.length; i++) {
 		indexById.set(probes[i].id, i);
+		probeById.set(probes[i].id, probes[i]);
 	}
 
 	return incidents.map((inc) => {
 		const idx = indexById.get(inc.probeId);
+		const rawProbe = probeById.get(inc.probeId);
 		const blueprint = getAnonymousBlueprint(inc.probeId, idx);
+		const scrubbedCause = anonymizeIncidentCause(inc.cause, blueprint, rawProbe);
 		return {
 			...inc,
-			probeName: blueprint.name
+			probeName: blueprint.name,
+			...(scrubbedCause !== undefined ? { cause: scrubbedCause } : {})
 		};
 	});
 }

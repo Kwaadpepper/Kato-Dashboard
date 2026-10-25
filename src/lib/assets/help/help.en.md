@@ -54,3 +54,4 @@ Access settings via the gear icon in the top header:
 4. **Marquee Speed**: Fast, Normal, and Slow presets or precise custom duration sliders (15s to 120s).
 5. **Clock & Timezone**: Toggle 24h or 12h formats, show/hide seconds, and select your preferred reference timezone.
 6. **Desktop Notifications**: Browser desktop pop-up alerts on probe state changes (UP, DOWN, DEGRADED).
+7. **Privacy Mode (Screenshot)**: Replace sensitive monitor names, URLs, and groups with generic placeholders for safe screen sharing.

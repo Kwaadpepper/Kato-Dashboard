@@ -225,5 +225,21 @@ describe('incident-queue utility module', () => {
 
 			assert.deepEqual(notifications, [0, 1]);
 		});
+
+		it('should update displayed probeName in-place without queuing when Privacy Mode is toggled during scrolling', () => {
+			const inc1 = createMockIncident('1', 'Secret Internal DB');
+			queue.setIncidents([inc1], true);
+
+			assert.equal(queue.getState().displayed[0]?.probeName, 'Secret Internal DB');
+			assert.equal(queue.getState().pendingCount, 0);
+
+			// Privacy Mode toggled ON while marquee is scrolling
+			const inc1Anon = { ...inc1, probeName: 'PostgreSQL Primary' };
+			queue.setIncidents([inc1Anon], true);
+
+			const state = queue.getState();
+			assert.equal(state.displayed[0]?.probeName, 'PostgreSQL Primary');
+			assert.equal(state.pendingCount, 0);
+		});
 	});
 });

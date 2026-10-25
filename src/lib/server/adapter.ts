@@ -59,7 +59,16 @@ export function getAdapterForProbe(
 	probeId: string,
 	store?: Pick<DashboardStore, 'getProbe'>
 ): MonitoringAdapter | null {
-	// 1. Store lookup
+	const colonIndex = probeId.indexOf(':');
+
+	// 1. Direct prefix match to a registered adapter name (e.g. "mock:3" -> "mock", "kuma_lan:42" -> "kuma_lan")
+	if (colonIndex > 0) {
+		const prefix = probeId.substring(0, colonIndex);
+		const byPrefix = adapterRegistry.get(prefix);
+		if (byPrefix) return byPrefix;
+	}
+
+	// 2. Store lookup: Check probe.source in the store
 	if (store && typeof store.getProbe === 'function') {
 		const probe = store.getProbe(probeId);
 		if (probe?.source) {
@@ -68,14 +77,9 @@ export function getAdapterForProbe(
 		}
 	}
 
-	// 2. Direct prefix matching
-	const colonIndex = probeId.indexOf(':');
+	// 3. Known default abbreviations
 	if (colonIndex > 0) {
 		const prefix = probeId.substring(0, colonIndex);
-		const byPrefix = adapterRegistry.get(prefix);
-		if (byPrefix) return byPrefix;
-
-		// 3. Known default abbreviations
 		if (prefix === 'ur') {
 			const ur =
 				adapterRegistry.get('uptimerobot') ??

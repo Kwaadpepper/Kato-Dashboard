@@ -4,7 +4,9 @@ import type { NormalizedIncident, NormalizedProbe } from '$lib/types';
 import {
 	anonymizeIncidents,
 	anonymizeProbe,
+	anonymizeProbeId,
 	anonymizeProbes,
+	isAnonymizeEnabled,
 	setAnonymizeEnabled,
 	toggleAnonymize
 } from './anonymize.ts';
@@ -67,7 +69,7 @@ describe('anonymize utility module', () => {
 		assert.equal(res[1].responseTime, 42);
 	});
 
-	it('should anonymize incident probeName consistently with its probe', () => {
+	it('should anonymize incident probeName and scrub sensitive hostnames/IPs from cause while keeping HTTP status codes', () => {
 		const incidents: NormalizedIncident[] = [
 			{
 				id: 'inc:1',
@@ -76,7 +78,18 @@ describe('anonymize utility module', () => {
 				type: 'down',
 				startedAt: '2026-10-25T09:50:00.000Z',
 				resolvedAt: null,
-				duration: null
+				duration: null,
+				cause: 'getaddrinfo ENOTFOUND payroll.secret-company.corp (10.24.0.15:8443)'
+			},
+			{
+				id: 'inc:2',
+				probeId: 'kuma_prod:42',
+				probeName: 'Secret Internal Payroll ERP',
+				type: 'down',
+				startedAt: '2026-10-25T08:00:00.000Z',
+				resolvedAt: '2026-10-25T08:05:00.000Z',
+				duration: 300,
+				cause: 'HTTP 503 - Service Unavailable'
 			}
 		];
 
@@ -85,14 +98,45 @@ describe('anonymize utility module', () => {
 
 		assert.equal(anonIncidents[0].probeName, anonProbes[0].name);
 		assert.notEqual(anonIncidents[0].probeName, 'Secret Internal Payroll ERP');
+		assert.ok(!anonIncidents[0].cause?.includes('payroll.secret-company.corp'));
+		assert.ok(!anonIncidents[0].cause?.includes('10.24.0.15'));
+		assert.ok(anonIncidents[0].cause?.includes('api.acme-corp.internal'));
+
+		// Standard technical cause without sensitive hostname is preserved intact
+		assert.equal(anonIncidents[1].cause, 'HTTP 503 - Service Unavailable');
 	});
 
-	it('should toggle state and notify subscribers', () => {
-		setAnonymizeEnabled(false);
-		const next = toggleAnonymize();
-		assert.equal(next, true);
-		const back = toggleAnonymize();
-		assert.equal(back, false);
+	it('should scrub Uptime Kuma encoded monitor names from displayed probe IDs while preserving numeric IDs', () => {
+		assert.equal(anonymizeProbeId('kuma_prod:42', 0, true), 'kuma_prod:42');
+		assert.equal(anonymizeProbeId('mock:12', undefined, true), 'mock:12');
+		const kumaEncoded = 'uk:Secret%20Internal%20Payroll%20ERP';
+		const scrubbed = anonymizeProbeId(kumaEncoded, 0, true);
+		assert.equal(scrubbed, 'uk:1');
+		assert.ok(!scrubbed.includes('Secret'));
+		assert.equal(anonymizeProbeId(kumaEncoded, 0, false), kumaEncoded);
+	});
+
+	it('should toggle state even when started with ?anonymize=1 in window.location.search', () => {
+		const prevWindow = (globalThis as Record<string, unknown>).window;
+		try {
+			(globalThis as Record<string, unknown>).window = {
+				location: { search: '?anonymize=1&tv=1' }
+			};
+			assert.equal(isAnonymizeEnabled(), true);
+
+			// User clicks toggle in Settings -> should turn OFF despite ?anonymize=1 in URL
+			const afterOff = toggleAnonymize();
+			assert.equal(afterOff, false);
+			assert.equal(isAnonymizeEnabled(), false);
+
+			// User clicks toggle again -> should turn back ON
+			const afterOn = toggleAnonymize();
+			assert.equal(afterOn, true);
+			assert.equal(isAnonymizeEnabled(), true);
+		} finally {
+			(globalThis as Record<string, unknown>).window = prevWindow;
+			setAnonymizeEnabled(false);
+		}
 	});
 
 	it('should generate unique suffixed names when probe count exceeds static blueprints', () => {

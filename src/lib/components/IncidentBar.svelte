@@ -104,7 +104,26 @@
       isExpanded = !isExpanded;
     }
   }
+
+  function handleWindowKeydown(event: KeyboardEvent) {
+    const target = event.target as HTMLElement | null;
+    if (
+      target &&
+      (target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT" ||
+        target.isContentEditable)
+    ) {
+      return;
+    }
+    if (event.key === "p" || event.key === "P") {
+      event.preventDefault();
+      isPaused = !isPaused;
+    }
+  }
 </script>
+
+<svelte:window onkeydown={handleWindowKeydown} />
 
 {#if queueState.displayed.length === 0 && queueState.activeCount === 0}
   <!-- ===================================================================== -->

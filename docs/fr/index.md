@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "Kato Dashboard"
   text: "Wallboard de Supervision Zéro-Scroll"
-  tagline: "Visualisez de 1 à plus de 200 sondes sur un seul écran sans aucun défilement. Agrégez plusieurs instances Uptime Kuma et UptimeRobot en temps réel via Server-Sent Events."
+  tagline: "Affichez de 1 à plus de 200 sondes Uptime Kuma et UptimeRobot sur un seul écran sans aucun défilement. Conçu pour les écrans TV, NOC et postes opérateurs."
   image:
     src: /logo.svg
     alt: Logo Kato Dashboard
@@ -22,46 +22,46 @@ hero:
 features:
   - icon: 📐
     title: Grille Zéro-Scroll Garantie
-    details: Moteur géométrique adaptatif calculant dynamiquement colonnes, lignes et 5 paliers de densité (large, medium, compact, micro, pixel) pour occuper 100% de l'écran.
+    details: Adapte automatiquement la taille des cartes pour que 100 % de vos sondes tiennent sur l'écran sans barre de défilement.
   - icon: 🔌
-    title: Multi-Sources & Pastilles Colorées
-    details: Agrégez simultanément plusieurs serveurs Uptime Kuma et comptes UptimeRobot sur un même écran, identifiés par des pastilles colorées automatiques (KP, KL, UR).
-  - icon: ⚡
-    title: Temps Réel SSE & Tri Intelligent
-    details: Flux Server-Sent Events différentiel ultra-léger. Les sondes en panne (DOWN) et dégradées (DEGRADED) remontent automatiquement en haut à gauche.
+    title: Agrégation Multi-Sources
+    details: Regroupez plusieurs serveurs Uptime Kuma et comptes UptimeRobot sur un même écran avec des pastilles de couleur par source.
+  - icon: 🎯
+    title: Priorité aux Pannes
+    details: Les services en panne (DOWN) ou ralentis (DEGRADED) remontent automatiquement en haut à gauche de l'écran.
   - icon: 📺
-    title: Mode TV & NOC 24/7 (?tv=1)
-    details: Conçu pour les écrans muraux avec plein écran automatique, masquage du curseur, dérive anti burn-in OLED/AMOLED, Wake Lock et bandeau d'incidents défilant.
+    title: Mode TV 24/7 (?tv=1)
+    details: Plein écran automatique, masquage du curseur, protection anti burn-in OLED, maintien de l'écran allumé et bandeau d'incidents.
   - icon: 🔔
-    title: Notifications Bureau, Audio & PWA
-    details: Installez Kato comme application de bureau/mobile (PWA avec lancement au démarrage de l'OS), recevez des notifications système et des alertes sonores synthétisées.
+    title: Alertes Bureau & Audio
+    details: Installez Kato comme application (PWA), recevez des notifications système et activez les alertes sonores en cas d'incident.
   - icon: 🕵️
-    title: Zéro Base de Données & Mode Capture
-    details: Architecture BFF Node.js 100% en mémoire vive, avec un Mode Anonymisation intégré pour masquer vos noms de serveurs et URLs sensibles en un clic lors d'une capture d'écran.
+    title: Mode Anonymisation (Capture)
+    details: Masquez vos noms de serveurs et URLs en un clic tout en conservant vos vrais statuts, latences et taux de disponibilité.
 ---
 
-## Aperçu du Wallboard en Temps Réel
+## Aperçu du Wallboard
 
 ![Aperçu principal Kato Dashboard](/screenshots/kato-hero-dark.png)
 
-## Lancer Kato en Une Seule Commande
+### Lancer Kato en Une Commande
 
-Démarrez Kato instantanément en mode démo multi-sources ou connectez-le directement à votre instance Uptime Kuma / UptimeRobot — **l'auto-détection de l'adaptateur** s'occupe du reste :
+Testez immédiatement le mode démo ou connectez directement votre instance Uptime Kuma / UptimeRobot :
 
 ```bash
-# Mode démo instantané (50 sondes multi-sources simulées)
+# Mode démo instantané
 docker run -d --name kato -p 3000:3000 ghcr.io/kwaadpepper/kato-dashboard:latest
 
-# Ou connexion directe à Uptime Kuma (auto-détecté)
+# Ou connexion directe à Uptime Kuma
 docker run -d --name kato -p 3000:3000 \
   -e UPTIME_KUMA_URL=https://kuma.votre-domaine.fr \
   -e UPTIME_KUMA_API_KEY=uk1_votre_cle_api \
   ghcr.io/kwaadpepper/kato-dashboard:latest
 ```
 
-## Inspection Détaillée 24h & Vues Haute Densité
+## Inspection 24h & Vues Haute Densité
 
-| Panneau d'Inspection SLA 24h & Incidents | Matrice Haute Densité (110+ sondes) |
+| Panneau de Détail 24h & Incidents | Matrice Haute Densité (110+ sondes) |
 | :--- | :--- |
 | ![Modale de détail 24h Kato](/screenshots/kato-detail-modal.png) | ![Grille Haute Densité Kato](/screenshots/kato-high-density.png) |
-| Cliquez sur n'importe quelle sonde pour inspecter sa latence, son SLA 24h/7j, sa frise horaire sur 24 heures et le journal chronologique des pannes. | S'adapte automatiquement en tuiles compactes, micro ou pixels à mesure que votre parc grandit — sans jamais afficher de barre de défilement. |
+| Cliquez sur une sonde pour consulter sa latence, sa disponibilité 24h/7j et l'historique des coupures. | Adapte automatiquement la taille des tuiles à mesure que votre parc grandit — sans jamais ajouter de défilement. |
