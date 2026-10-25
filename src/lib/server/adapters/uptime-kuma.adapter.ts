@@ -106,7 +106,8 @@ export class UptimeKumaAdapter implements MonitoringAdapter {
 			for (const [key, metric] of Object.entries(statuses)) {
 				const probeId = `${this.idPrefix}:${key}`;
 				const status: ProbeStatus = metric.value === 1 ? 'up' : 'down';
-				const responseTime = responseTimes[key]?.value ?? null;
+				const rawRt = responseTimes[key]?.value;
+				const responseTime = rawRt !== undefined && rawRt !== null && rawRt >= 0 ? rawRt : null;
 
 				this.trackIncidentState(probeId, metric.name, status, nowIso);
 				if (status === 'down') currentDownIds.add(probeId);

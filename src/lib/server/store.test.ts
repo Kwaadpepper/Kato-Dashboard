@@ -132,5 +132,78 @@ describe('DashboardStore lifecycle and memory leak prevention', () => {
 		assert.equal(state.source.includes('kuma_prod'), true);
 		assert.equal(state.source.includes('kuma_lan'), true);
 	});
+
+	it('should detect deleted probes for a source, emit removedProbeIds, and purge incidents', () => {
+		store.reset();
+
+		const probe1: NormalizedProbe = {
+			id: 'uk:1',
+			name: 'Monitor 1',
+			url: 'https://mon1.lan',
+			status: 'down',
+			responseTime: null,
+			uptime24h: 95,
+			uptime7d: 95,
+			lastCheck: new Date().toISOString(),
+			criticality: 'medium',
+			group: null,
+			source: 'UptimeKuma'
+		};
+
+		const probe2: NormalizedProbe = {
+			id: 'uk:2',
+			name: 'Monitor 2',
+			url: 'https://mon2.lan',
+			status: 'up',
+			responseTime: 30,
+			uptime24h: 100,
+			uptime7d: 100,
+			lastCheck: new Date().toISOString(),
+			criticality: 'medium',
+			group: null,
+			source: 'UptimeKuma'
+		};
+
+		const probeOtherSource: NormalizedProbe = {
+			id: 'ur:1',
+			name: 'Robot Monitor',
+			url: 'https://robot.lan',
+			status: 'up',
+			responseTime: 20,
+			uptime24h: 100,
+			uptime7d: 100,
+			lastCheck: new Date().toISOString(),
+			criticality: 'medium',
+			group: null,
+			source: 'UptimeRobot'
+		};
+
+		// Initial load with 2 UptimeKuma probes and 1 UptimeRobot probe
+		store.updateProbes([probe1, probe2], 'UptimeKuma');
+		store.updateProbes([probeOtherSource], 'UptimeRobot');
+
+		assert.equal(store.getState().probes.length, 3);
+		// probe1 started DOWN so an incident was created
+		assert.equal(store.getState().incidents.length, 1);
+		assert.equal(store.getState().incidents[0].probeId, 'uk:1');
+
+		// Next poll for UptimeKuma: monitor 1 was deleted in UptimeKuma!
+		const delta = store.updateProbes([probe2], 'UptimeKuma');
+
+		assert.ok(delta !== null, 'Delta must be produced for probe deletion');
+		assert.deepEqual(delta.removedProbeIds, ['uk:1']);
+		assert.ok(delta.resolvedIncidentIds.length >= 1, 'Active incident must be resolved/cleared');
+
+		// Store must no longer contain uk:1, but must still have uk:2 and ur:1
+		const updatedState = store.getState();
+		assert.equal(updatedState.probes.length, 2);
+		assert.equal(store.getProbe('uk:1'), undefined);
+		assert.equal(store.getProbe('uk:2')?.name, 'Monitor 2');
+		assert.equal(store.getProbe('ur:1')?.name, 'Robot Monitor');
+
+		// Incidents of deleted probe must be purged
+		assert.equal(updatedState.incidents.length, 0);
+	});
 });
+
 

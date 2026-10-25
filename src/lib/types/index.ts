@@ -152,6 +152,8 @@ export interface DashboardState {
 export interface DashboardDelta {
   /** Probes with modified status or metrics */
   changed: NormalizedProbe[];
+  /** IDs of probes that have been removed/deleted from the monitoring provider */
+  removedProbeIds?: string[];
   /** Newly opened incidents */
   newIncidents: NormalizedIncident[];
   /** IDs of incidents that have been resolved */

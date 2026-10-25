@@ -238,6 +238,21 @@
         previousStatuses = initStatusMap;
       },
       (delta: DashboardDelta) => {
+        // 0. Immediately remove deleted probes and their associated incidents
+        if (delta.removedProbeIds && delta.removedProbeIds.length > 0) {
+          const removedSet = new Set(delta.removedProbeIds);
+          probes = probes.filter((p) => !removedSet.has(p.id));
+          const updatedPrev = { ...previousStatuses };
+          for (const remId of delta.removedProbeIds) {
+            delete updatedPrev[remId];
+          }
+          previousStatuses = updatedPrev;
+          if (selectedProbe && removedSet.has(selectedProbe.id)) {
+            selectedProbe = null;
+          }
+          incidents = incidents.filter((i) => !removedSet.has(i.probeId));
+        }
+
         // A. Detect UP -> DOWN and DOWN -> UP transitions with sound alerts
         if (delta.changed.length > 0) {
           let upToDownCount = 0;

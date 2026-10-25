@@ -99,15 +99,38 @@ class DashboardStore {
 	 * @returns The generated delta, or null if no changes occurred.
 	 */
 	updateProbes(probes: NormalizedProbe[], source?: string): DashboardDelta | null {
-		if (source) {
-			this.activeSources.add(source);
+		const effectiveSource = source || (probes.length > 0 ? probes[0].source : undefined);
+		if (effectiveSource) {
+			this.activeSources.add(effectiveSource);
 		}
 
 		const now = Date.now();
 		const nowIso = new Date(now).toISOString();
 		const changed: NormalizedProbe[] = [];
+		const removedProbeIds: string[] = [];
 		const newIncidents: NormalizedIncident[] = [];
 		const resolvedIncidentIds: string[] = [];
+
+		// ── 0. Removal detection for target source ──────────────────────────────
+		const incomingIds = new Set(probes.map((p) => p.id));
+		if (effectiveSource) {
+			for (const [id, existingProbe] of this.probes.entries()) {
+				if (existingProbe.source === effectiveSource && !incomingIds.has(id)) {
+					this.probes.delete(id);
+					removedProbeIds.push(id);
+
+					// Purge all incidents associated with this deleted probe
+					for (const [incId, inc] of this.incidents.entries()) {
+						if (inc.probeId === id) {
+							if (inc.resolvedAt === null) {
+								resolvedIncidentIds.push(incId);
+							}
+							this.incidents.delete(incId);
+						}
+					}
+				}
+			}
+		}
 
 		// ── 1. Change detection ──────────────────────────────────────────────────
 		for (const incoming of probes) {
@@ -187,12 +210,18 @@ class DashboardStore {
 		this.lastUpdate = nowIso;
 
 		// ── 4. No significant changes -> no delta ────────────────────────────────
-		if (changed.length === 0 && newIncidents.length === 0 && resolvedIncidentIds.length === 0) {
+		if (
+			changed.length === 0 &&
+			removedProbeIds.length === 0 &&
+			newIncidents.length === 0 &&
+			resolvedIncidentIds.length === 0
+		) {
 			return null;
 		}
 
 		const delta: DashboardDelta = {
 			changed,
+			...(removedProbeIds.length > 0 ? { removedProbeIds } : {}),
 			newIncidents,
 			resolvedIncidentIds,
 			timestamp: nowIso

@@ -15,6 +15,7 @@
     formatDurationCompact,
     formatEventDateTime,
   } from "$lib/utils/probe-history";
+  import { getSourceBadge } from "$lib/utils/source";
   import Activity from "lucide-svelte/icons/activity";
   import CircleCheck from "lucide-svelte/icons/circle-check";
   import Clock from "lucide-svelte/icons/clock";
@@ -53,6 +54,7 @@
   const statusLabel = $derived(
     probe ? getStatusLabel(probe.status, activeLocale) : "",
   );
+  const sourceBadge = $derived(probe ? getSourceBadge(probe.source) : null);
 
   onMount(() => {
     return onLocaleChange((loc) => {
@@ -337,7 +339,9 @@
                 <span>{t("detailModal.latency")}</span>
               </div>
               <p class="text-2xl font-bold font-mono text-white">
-                {probe.responseTime !== null ? `${probe.responseTime} ms` : "—"}
+                {probe.responseTime !== null && probe.responseTime >= 0
+                  ? `${probe.responseTime} ms`
+                  : "—"}
               </p>
             </div>
 
@@ -661,9 +665,18 @@
               <span>{t("detailModal.probeId")}</span>
               <span class="text-slate-300 select-all">{probe.id}</span>
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between items-center">
               <span>{t("detailModal.source")}</span>
-              <span class="text-slate-300">{probe.source}</span>
+              <span class="flex items-center gap-1.5 text-slate-300">
+                {#if sourceBadge}
+                  <span
+                    class="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold border {sourceBadge.className}"
+                  >
+                    {sourceBadge.initials}
+                  </span>
+                {/if}
+                <span>{probe.source}</span>
+              </span>
             </div>
             <div class="flex justify-between">
               <span>{t("detailModal.lastCheck")}</span>

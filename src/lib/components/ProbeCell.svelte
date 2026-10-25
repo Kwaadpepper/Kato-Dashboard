@@ -8,6 +8,7 @@
   } from "$lib/i18n";
   import type { GridDensity, NormalizedProbe, ProbeStatus } from "$lib/types";
   import { STATUS_COLORS, getStatusLabel } from "$lib/utils/colors";
+  import { getSourceBadge } from "$lib/utils/source";
   import { cleanDisplayUrl } from "$lib/utils/url-cleaner";
   import CircleCheck from "lucide-svelte/icons/circle-check";
   import CirclePause from "lucide-svelte/icons/circle-pause";
@@ -84,8 +85,12 @@
     }
   }
 
+  const sourceBadge = $derived(getSourceBadge(probe.source));
+
   const responseTimeDisplay = $derived(
-    probe.responseTime !== null ? `${probe.responseTime} ms` : "—",
+    probe.responseTime !== null && probe.responseTime >= 0
+      ? `${probe.responseTime} ms`
+      : "—",
   );
 
   const uptimeDisplay = $derived(
@@ -129,18 +134,24 @@
     onkeydown={handleKeydown}
     onfocus={oncellfocus}
   >
-    <!-- Zone 1: Header (clean URL left + status indicator right) -->
+    <!-- Zone 1: Header (source badge + clean URL left + status indicator right) -->
     <div class="flex justify-between items-center gap-2 min-w-0">
-      {#if displayUrl}
+      <div class="flex items-center gap-1.5 min-w-0 truncate">
         <span
-          class="text-[11px] text-[var(--kato-text-secondary)] font-mono truncate max-w-[75%]"
-          title={probe.url}
+          class="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold tracking-wider border shrink-0 {sourceBadge.className}"
+          title="Source : {probe.source}"
         >
-          {displayUrl}
+          {sourceBadge.initials}
         </span>
-      {:else}
-        <span></span>
-      {/if}
+        {#if displayUrl}
+          <span
+            class="text-[11px] text-[var(--kato-text-secondary)] font-mono truncate"
+            title={probe.url}
+          >
+            {displayUrl}
+          </span>
+        {/if}
+      </div>
 
       <!-- Unique status indicator -->
       <div class="shrink-0 flex items-center" aria-hidden="true">
@@ -209,8 +220,14 @@
     onkeydown={handleKeydown}
     onfocus={oncellfocus}
   >
-    <!-- Zone 1: Header (Unique status indicator) -->
-    <div class="flex items-center justify-end min-w-0">
+    <!-- Zone 1: Header (Source badge left + status indicator right) -->
+    <div class="flex items-center justify-between min-w-0 w-full">
+      <span
+        class="px-1.5 py-0.2 rounded text-[9px] font-mono font-semibold tracking-wider border shrink-0 {sourceBadge.className}"
+        title="Source : {probe.source}"
+      >
+        {sourceBadge.initials}
+      </span>
       <span
         class="w-2.5 h-2.5 rounded-full shrink-0 {color.bgClass} shadow-xs"
         aria-hidden="true"
@@ -264,8 +281,14 @@
     onkeydown={handleKeydown}
     onfocus={oncellfocus}
   >
-    <!-- Zone 1: Header (Status indicator in corner) -->
-    <div class="flex items-center justify-end w-full">
+    <!-- Zone 1: Header (Source badge left + status indicator right) -->
+    <div class="flex items-center justify-between w-full">
+      <span
+        class="px-1 py-0.2 rounded text-[8px] font-mono font-bold tracking-wider border shrink-0 {sourceBadge.className}"
+        title="Source : {probe.source}"
+      >
+        {sourceBadge.initials}
+      </span>
       <span
         class="w-2 h-2 rounded-full shrink-0 {color.bgClass} shadow-xs"
         aria-hidden="true"
