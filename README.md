@@ -7,10 +7,10 @@ Aggregate multiple **Uptime Kuma** and **UptimeRobot** instances in real time on
 
 [![CI](https://github.com/Kwaadpepper/kato-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/Kwaadpepper/kato-dashboard/actions/workflows/ci.yml)
 [![Docker](https://github.com/Kwaadpepper/kato-dashboard/actions/workflows/docker.yml/badge.svg)](https://github.com/Kwaadpepper/kato-dashboard/pkgs/container/kato-dashboard)
-[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages%20(EN%20%2F%20FR)-10b981)](https://kwaadpepper.github.io/kato-dashboard/)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages%20(EN%20%2F%20FR)-10b981)](https://kato.jeremydev.ovh/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-[**📘 Documentation (English)**](https://kwaadpepper.github.io/kato-dashboard/) · [**🇫🇷 Documentation (Français)**](https://kwaadpepper.github.io/kato-dashboard/fr/) · [**🚀 Quick Start (30s)**](#-quick-start-30-seconds) · [**🐳 Docker Image**](https://github.com/Kwaadpepper/kato-dashboard/pkgs/container/kato-dashboard)
+[**📘 Documentation (English)**](https://kato.jeremydev.ovh/) · [**🇫🇷 Documentation (Français)**](https://kato.jeremydev.ovh/fr/) · [**🚀 Quick Start (30s)**](#-quick-start-30-seconds) · [**🐳 Docker Image**](https://github.com/Kwaadpepper/kato-dashboard/pkgs/container/kato-dashboard)
 
 </div>
 
@@ -102,7 +102,7 @@ ADAPTER_KUMA_LAN_API_KEY=uk1_lan_token
 ADAPTER_ROBOT_MAIN_API_KEY=u987654-secret
 ```
 
-👉 Read the [**Full Documentation (EN / FR)**](https://kwaadpepper.github.io/kato-dashboard/) for all configuration options and keyboard shortcuts.
+👉 Read the [**Full Documentation (EN / FR)**](https://kato.jeremydev.ovh/) for all configuration options and keyboard shortcuts.
 
 ---
 

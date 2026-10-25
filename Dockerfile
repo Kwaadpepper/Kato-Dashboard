@@ -15,7 +15,7 @@ FROM node:22-alpine AS runner
 LABEL org.opencontainers.image.title="Kato Dashboard" \
       org.opencontainers.image.description="High-density wallboard monitoring dashboard for desktop and TV screens with zero scroll" \
       org.opencontainers.image.source="https://github.com/Kwaadpepper/kato-dashboard" \
-      org.opencontainers.image.url="https://kwaadpepper.github.io/kato-dashboard/" \
+      org.opencontainers.image.url="https://kato.jeremydev.ovh/" \
       org.opencontainers.image.licenses="MIT"
 
 WORKDIR /app

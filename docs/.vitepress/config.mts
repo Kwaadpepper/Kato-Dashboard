@@ -3,10 +3,10 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
 	title: 'Kato Dashboard',
 	description: 'High-density zero-scroll monitoring wallboard for TVs, NOCs, and workstations.',
-	base: '/kato-dashboard/',
+	base: '/',
 	cleanUrls: true,
 	head: [
-		['link', { rel: 'icon', type: 'image/svg+xml', href: '/kato-dashboard/favicon.svg' }],
+		['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
 		['meta', { name: 'theme-color', content: '#10b981' }],
 		['meta', { property: 'og:type', content: 'website' }],
 		['meta', { property: 'og:title', content: 'Kato — High-Density Monitoring Wallboard' }],
@@ -22,7 +22,7 @@ export default defineConfig({
 			'meta',
 			{
 				property: 'og:image',
-				content: 'https://kwaadpepper.github.io/kato-dashboard/screenshots/kato-hero-dark.png'
+				content: 'https://kato.jeremydev.ovh/screenshots/kato-hero-dark.png'
 			}
 		]
 	],
